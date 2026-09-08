@@ -1,5 +1,6 @@
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { getActivePorts } from "./ports-service";
 
 const execFileAsync = promisify(execFile);
 
@@ -13,6 +14,7 @@ export interface PM2Process {
   memory: number; // bytes
   uptime: number; // timestamp
   restarts: number;
+  ports?: number[];
 }
 
 export interface PM2Summary {
@@ -150,6 +152,25 @@ function applyMetricJitter(procs: PM2Process[]): PM2Process[] {
  * Attempts host CLI `pm2 jlist`, and falls back to resilient mock with jitter.
  */
 export async function getPM2Processes(): Promise<PM2ListResponse> {
+  // Try fetching active ports concurrently to map them to PM2 processes
+  let activePortsMap = new Map<number, number[]>();
+  try {
+    const portsData = await getActivePorts();
+    if (portsData && portsData.ports) {
+      for (const p of portsData.ports) {
+        if (p.pid) {
+          const existing = activePortsMap.get(p.pid) || [];
+          if (!existing.includes(p.port)) {
+            existing.push(p.port);
+          }
+          activePortsMap.set(p.pid, existing);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to fetch ports for mapping:", err);
+  }
+
   // Attempt host CLI execution
   try {
     const { stdout } = await execFileAsync("pm2", ["jlist"], {
@@ -175,8 +196,11 @@ export async function getPM2Processes(): Promise<PM2ListResponse> {
         const memory = typeof monit.memory === "number" ? monit.memory : 0;
         const uptime = typeof pm2Env.pm_uptime === "number" ? pm2Env.pm_uptime : Date.now();
         const restarts = typeof pm2Env.restart_time === "number" ? pm2Env.restart_time : 0;
+        
+        // Match ports by PID
+        const ports = activePortsMap.get(pid) || [];
 
-        return { id, name, pid, status, mode, cpu, memory, uptime, restarts };
+        return { id, name, pid, status, mode, cpu, memory, uptime, restarts, ports };
       });
 
       const summary = calculatePM2Summary(processes);
@@ -194,7 +218,10 @@ export async function getPM2Processes(): Promise<PM2ListResponse> {
 
   // Resilient Mock Fallback
   const mockProcs = getMockProcesses();
-  const processes = applyMetricJitter(mockProcs);
+  const processes = applyMetricJitter(mockProcs).map(p => ({
+    ...p,
+    ports: activePortsMap.get(p.pid) || (p.pid === 10421 ? [3000] : p.pid === 10422 ? [8000] : []) // Mock port fallback
+  }));
   const summary = calculatePM2Summary(processes);
 
   return {

@@ -1,169 +1,112 @@
-import { auth, signOut } from "@/auth";
-import { redirect } from "next/navigation";
-import PM2Manager from "@/components/PM2Manager";
-import PortManager from "@/components/PortManager";
-import NginxEditor from "@/components/NginxEditor";
-import WebTerminal from "@/components/WebTerminal";
 import { Activity, Network, FileCode, Terminal } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session?.user) {
-    redirect("/login");
-  }
-
   return (
-    <div className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-8">
+    <div className="p-6 max-w-7xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-200 dark:border-zinc-800">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-            PM2 Management Dashboard
-          </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Server process monitoring, network ports, Nginx configuration, and terminal console
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
-            Admin: {session.user.name || "admin"}
-          </span>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <button
-              type="submit"
-              className="px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md transition-colors cursor-pointer"
-            >
-              Sign Out
-            </button>
-          </form>
-        </div>
+      <div className="pb-6 border-b border-zinc-200 dark:border-zinc-800">
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+          Overview
+        </h1>
+        <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          Server health and quick access to management tools.
+        </p>
       </div>
 
       {/* Metric Cards / Quick Jump Navigation */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a
-          href="#pm2"
-          className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-emerald-500/50 hover:shadow-md transition-all group cursor-pointer"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+        <Link
+          href="/pm2"
+          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-emerald-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
               PM2 Processes
             </h2>
-            <Activity className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+            <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
+              <Activity className="w-5 h-5 text-emerald-500" />
+            </div>
           </div>
-          <p className="mt-2 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-            Active
+          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+            Manager
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
-            Milestone M2 • Process controller & metrics
+          <p className="mt-2 text-sm text-zinc-500">
+            Process controller & resource metrics
           </p>
-        </a>
+        </Link>
 
-        <a
-          href="#ports"
-          className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-blue-500/50 hover:shadow-md transition-all group cursor-pointer"
+        <Link
+          href="/ports"
+          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-blue-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
               Active Ports
             </h2>
-            <Network className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
+            <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
+              <Network className="w-5 h-5 text-blue-500" />
+            </div>
           </div>
-          <p className="mt-2 text-2xl font-bold text-blue-600 dark:text-blue-400">
-            Listening
+          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+            Discovery
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
-            Milestone M3 • Network socket discovery
+          <p className="mt-2 text-sm text-zinc-500">
+            Network socket and listener mapping
           </p>
-        </a>
+        </Link>
 
-        <a
-          href="#nginx"
-          className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-emerald-500/50 hover:shadow-md transition-all group cursor-pointer"
+        <Link
+          href="/nginx"
+          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-emerald-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
               Nginx Configs
             </h2>
-            <FileCode className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+            <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
+              <FileCode className="w-5 h-5 text-emerald-500" />
+            </div>
           </div>
-          <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-            Editable
+          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+            Editor
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
-            Milestone M3 • Virtual host configuration editor
+          <p className="mt-2 text-sm text-zinc-500">
+            Virtual host configuration editor
           </p>
-        </a>
+        </Link>
 
-        <a
-          href="#terminal"
-          className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-purple-500/50 hover:shadow-md transition-all group cursor-pointer"
+        <Link
+          href="/terminal"
+          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-purple-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
               Web Terminal
             </h2>
-            <Terminal className="w-4 h-4 text-purple-500 group-hover:scale-110 transition-transform" />
+            <div className="p-2 bg-purple-500/10 rounded-lg group-hover:bg-purple-500/20 transition-colors">
+              <Terminal className="w-5 h-5 text-purple-500" />
+            </div>
           </div>
-          <p className="mt-2 text-2xl font-bold text-purple-600 dark:text-purple-400">
-            Interactive
+          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+            Console
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
-            Milestone M4 • Shell execution console
+          <p className="mt-2 text-sm text-zinc-500">
+            Interactive shell execution
           </p>
-        </a>
+        </Link>
       </div>
-
-      {/* Section 1: PM2 Management & Monitoring (M2) */}
-      <section id="pm2" className="scroll-mt-8 space-y-4">
-        <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-          <Activity className="w-5 h-5 text-emerald-500" />
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            PM2 Process Controller & Telemetry
-          </h2>
-        </div>
-        <PM2Manager />
-      </section>
-
-      {/* Section 2: Active Port Discovery (M3) */}
-      <section id="ports" className="scroll-mt-8 space-y-4">
-        <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-          <Network className="w-5 h-5 text-blue-500" />
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            Active Network Port Mappings
-          </h2>
-        </div>
-        <PortManager />
-      </section>
-
-      {/* Section 3: Nginx Configuration Editor (M3) */}
-      <section id="nginx" className="scroll-mt-8 space-y-4">
-        <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-          <FileCode className="w-5 h-5 text-emerald-500" />
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            Nginx Gateway & Virtual Host Configuration
-          </h2>
-        </div>
-        <NginxEditor />
-      </section>
-
-      {/* Section 4: Web Terminal Console (M4) */}
-      <section id="terminal" className="scroll-mt-8 space-y-4">
-        <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-          <Terminal className="w-5 h-5 text-purple-500" />
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            Interactive Web Terminal Console
-          </h2>
-        </div>
-        <WebTerminal username="user" />
-      </section>
+      
+      {/* Welcome / System Info Widget */}
+      <div className="p-8 bg-zinc-900 rounded-2xl border border-zinc-800">
+        <h2 className="text-xl font-bold text-white mb-4">Welcome to Server Manager</h2>
+        <p className="text-zinc-400 max-w-2xl leading-relaxed">
+          Use the sidebar to navigate between your PM2 processes, active ports, Nginx configurations, and the web terminal. 
+          This dashboard runs directly on your server, providing secure access to critical infrastructure management tools.
+        </p>
+      </div>
     </div>
   );
 }

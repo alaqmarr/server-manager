@@ -35,6 +35,7 @@ export interface PM2Process {
   memory: number;
   uptime: number;
   restarts: number;
+  ports?: number[];
 }
 
 export interface PM2Summary {
@@ -436,6 +437,7 @@ export default function PM2Manager() {
                   <th className="py-3 px-4 sm:px-6">Process</th>
                   <th className="py-3 px-3">Status</th>
                   <th className="py-3 px-3">PID</th>
+                  <th className="py-3 px-3">Ports</th>
                   <th className="py-3 px-3">CPU</th>
                   <th className="py-3 px-3">Memory</th>
                   <th className="py-3 px-3">Uptime</th>
@@ -498,6 +500,24 @@ export default function PM2Manager() {
                       {/* PID */}
                       <td className="py-3.5 px-3 font-mono text-xs text-zinc-500 dark:text-zinc-400">
                         {proc.pid || "—"}
+                      </td>
+
+                      {/* Ports */}
+                      <td className="py-3.5 px-3">
+                        <div className="flex flex-wrap gap-1">
+                          {proc.ports && proc.ports.length > 0 ? (
+                            proc.ports.map((port, idx) => (
+                              <span 
+                                key={idx} 
+                                className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded text-[10px] font-mono"
+                              >
+                                :{port}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-xs text-zinc-400">—</span>
+                          )}
+                        </div>
                       </td>
 
                       {/* CPU */}
