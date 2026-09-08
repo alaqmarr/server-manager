@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import fs from "fs";
 import path from "path";
+import { exec } from "child_process";
+import os from "os";
+
+const execAsync = (cmd: string) => new Promise<{stdout: string, stderr: string}>((resolve, reject) => exec(cmd, (err, stdout, stderr) => err ? reject(err) : resolve({stdout, stderr})));
 
 export async function GET(req: Request) {
   try {
@@ -37,11 +41,48 @@ export async function POST(req: Request) {
     
     if (!target) return NextResponse.json({ error: "Missing target path" }, { status: 400 });
     
-    if (action === 'read') {
-      if (!fs.existsSync(target) || !fs.statSync(target).isFile()) return NextResponse.json({ error: "File not found" }, { status: 404 });
+        if (action === 'read') {
+      if (!fs.existsSync(/*turbopackIgnore: true*/ target) || !fs.statSync(target).isFile()) return NextResponse.json({ error: "File not found" }, { status: 404 });
       return NextResponse.json({ content: fs.readFileSync(target, "utf8") });
     } else if (action === 'save') {
-      fs.writeFileSync(target, content || "", "utf8");
+      try {
+        fs.writeFileSync(target, content || "", "utf8");
+      } catch (err: any) {
+        if (err.code === 'EACCES') {
+          const sysTempPath = path.join(os.tmpdir(), `file-save-${Date.now()}.tmp`);
+          fs.writeFileSync(sysTempPath, content || "", "utf8");
+          await execAsync(`sudo -n cp ${sysTempPath} ${target}`);
+          fs.unlinkSync(sysTempPath);
+        } else {
+          throw err;
+        }
+      }
+      return NextResponse.json({ success: true });
+    } else if (action === 'delete') {
+      try {
+        if (fs.statSync(target).isDirectory()) {
+          fs.rmSync(target, { recursive: true, force: true });
+        } else {
+          fs.unlinkSync(target);
+        }
+      } catch (err: any) {
+        if (err.code === 'EACCES') {
+          await execAsync(`sudo -n rm -rf ${target}`);
+        } else {
+          throw err;
+        }
+      }
+      return NextResponse.json({ success: true });
+    } else if (action === 'mkdir') {
+      try {
+        fs.mkdirSync(target, { recursive: true });
+      } catch (err: any) {
+        if (err.code === 'EACCES') {
+          await execAsync(`sudo -n mkdir -p ${target}`);
+        } else {
+          throw err;
+        }
+      }
       return NextResponse.json({ success: true });
     } else if (action === 'delete') {
       if (fs.statSync(target).isDirectory()) {

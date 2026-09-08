@@ -1,4 +1,5 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -298,32 +299,45 @@ export async function saveNginxFile(relativePath: string, content: string): Prom
 
   // Ensure parent directory exists
   const parentDir = path.dirname(safePath);
-  if (!fs.existsSync(parentDir)) {
-    fs.mkdirSync(parentDir, { recursive: true });
+  try {
+    if (!fs.existsSync(parentDir)) {
+      fs.mkdirSync(parentDir, { recursive: true });
+    }
+  } catch (err: any) {
+    if (err.code === 'EACCES') {
+      await execAsync(`sudo -n mkdir -p ${parentDir}`);
+    } else {
+      throw err;
+    }
   }
 
   // Create .bak backup if the file already exists
   if (fs.existsSync(/*turbopackIgnore: true*/ safePath)) {
     try {
       fs.copyFileSync(/*turbopackIgnore: true*/ safePath, `${safePath}.bak`);
-    } catch (err) {
-      console.warn("Failed to create .bak backup:", err);
+    } catch (err: any) {
+      if (err.code === 'EACCES') {
+        try {
+          await execAsync(`sudo -n cp ${safePath} ${safePath}.bak`);
+        } catch {}
+      }
     }
   }
 
-  // Write content to temporary file then rename for atomic write
-  const tempPath = `${safePath}.tmp.${Date.now()}`;
+  const sysTempPath = path.join(os.tmpdir(), `nginx-save-${Date.now()}.conf`);
+  fs.writeFileSync(sysTempPath, String(content), "utf-8");
+
   try {
-    fs.writeFileSync(tempPath, String(content), "utf-8");
-    fs.renameSync(tempPath, safePath);
-  } catch {
-    // If temp write/rename fails, fallback to direct write
-    if (fs.existsSync(tempPath)) {
-      try {
-        fs.unlinkSync(tempPath);
-      } catch {}
+    fs.renameSync(sysTempPath, safePath);
+  } catch (err: any) {
+    if (err.code === 'EACCES' || err.code === 'EXDEV') {
+      await execAsync(`sudo -n cp ${sysTempPath} ${safePath}`);
+      await execAsync(`sudo -n chmod 644 ${safePath}`);
+      fs.unlinkSync(sysTempPath);
+    } else {
+      try { fs.unlinkSync(sysTempPath); } catch {}
+      throw err;
     }
-    fs.writeFileSync(safePath, String(content), "utf-8");
   }
 
   return {
@@ -434,8 +448,14 @@ export async function testNginxSyntax(content?: string, relativePath?: string): 
 export async function createNginxConfig(name: string, template: 'proxy' | 'static', domain: string, portOrPath: string): Promise<NginxSaveResponse> {
   const baseDir = getNginxBaseDir();
   const sitesAvailable = path.join(baseDir, 'sites-available');
-  if (!fs.existsSync(sitesAvailable)) {
-    fs.mkdirSync(sitesAvailable, { recursive: true });
+  try {
+    if (!fs.existsSync(sitesAvailable)) {
+      fs.mkdirSync(sitesAvailable, { recursive: true });
+    }
+  } catch (err: any) {
+    if (err.code === 'EACCES') {
+      await execAsync(`sudo -n mkdir -p ${sitesAvailable}`);
+    }
   }
 
   const safeName = name.replace(/[^a-zA-Z0-9.-]/g, '');
@@ -444,23 +464,23 @@ export async function createNginxConfig(name: string, template: 'proxy' | 'stati
     throw new NginxError("Configuration file already exists", 400);
   }
 
-  let content = '';
+  let fileContent = '';
   if (template === 'proxy') {
-    content = `server {
+    fileContent = `server {
     listen 80;
     server_name ${domain};
 
     location / {
         proxy_pass http://127.0.0.1:${portOrPath};
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
     }
 }`;
   } else {
-    content = `server {
+    fileContent = `server {
     listen 80;
     server_name ${domain};
 
@@ -468,12 +488,26 @@ export async function createNginxConfig(name: string, template: 'proxy' | 'stati
     index index.html index.htm;
 
     location / {
-        try_files \$uri \$uri/ /index.html;
+        try_files $uri $uri/ /index.html;
     }
 }`;
   }
 
-  fs.writeFileSync(filePath, content, 'utf-8');
+  const sysTempPath = path.join(os.tmpdir(), `nginx-create-${Date.now()}.conf`);
+  fs.writeFileSync(sysTempPath, fileContent, "utf-8");
+
+  try {
+    fs.renameSync(sysTempPath, filePath);
+  } catch (err: any) {
+    if (err.code === 'EACCES' || err.code === 'EXDEV') {
+      await execAsync(`sudo -n cp ${sysTempPath} ${filePath}`);
+      await execAsync(`sudo -n chmod 644 ${filePath}`);
+      fs.unlinkSync(sysTempPath);
+    } else {
+      try { fs.unlinkSync(sysTempPath); } catch {}
+      throw err;
+    }
+  }
 
   return {
     success: true,
