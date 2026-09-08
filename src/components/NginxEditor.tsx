@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { FileCode, Save, RefreshCw, AlertCircle, CheckCircle, FileText } from "lucide-react";
 
+export interface NginxFileEntry { name: string; relativePath: string; size: number; modifiedAt: string; }
+
 export default function NginxEditor() {
-  const [files, setFiles] = useState<string[]>([]);
+  const [files, setFiles] = useState<NginxFileEntry[]>([]);
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ export default function NginxEditor() {
       if (data.files) {
         setFiles(data.files);
         if (data.files.length > 0) {
-          loadContent(data.files[0]);
+          loadContent(data.files[0].relativePath);
         }
       }
     } catch (err) {
@@ -77,15 +79,15 @@ export default function NginxEditor() {
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {files.map((f) => (
             <button
-              key={f}
-              onClick={() => loadContent(f)}
+              key={f.relativePath}
+              onClick={() => loadContent(f.relativePath)}
               className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                selectedFile === f
+                selectedFile === f.relativePath
                   ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
                   : "text-slate-400 hover:bg-white/5 hover:text-slate-200 border border-transparent"
               }`}
             >
-              {f}
+              {f.relativePath}
             </button>
           ))}
           {files.length === 0 && (

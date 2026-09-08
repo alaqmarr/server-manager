@@ -29,7 +29,7 @@ export const authConfig: NextAuthConfig = {
         if (nextUrl.pathname.startsWith("/api/")) {
           return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
-        return false;
+        return true;
       }
 
       return true;

@@ -6,7 +6,7 @@ import { Network, RefreshCw, AlertCircle, Server } from "lucide-react";
 interface PortInfo {
   port: number;
   protocol: string;
-  processName: string;
+  process: string;
   pid: number;
 }
 
@@ -96,7 +96,9 @@ export default function PortManager() {
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="font-semibold text-slate-200">{p.processName || "Unknown"}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-200">{p.process || "Unknown"}</span>
+                      </div>
                     </td>
                     <td className="py-4 px-6">
                       <span className="font-mono text-xs text-slate-500">
