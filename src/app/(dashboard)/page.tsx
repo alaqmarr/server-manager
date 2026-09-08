@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   return (
-    <div className="p-6 max-w-7xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="p-8 w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
       <div className="pb-6 border-b border-zinc-200 dark:border-zinc-800">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">

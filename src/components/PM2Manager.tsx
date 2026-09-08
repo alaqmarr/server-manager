@@ -25,6 +25,18 @@ import {
   Legend,
 } from "recharts";
 
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 export interface PM2Process {
   id: number | string;
   name: string;
@@ -253,17 +265,19 @@ export default function PM2Manager() {
             </span>
           </div>
 
-          <button
+          <Button
             onClick={handleManualRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+            variant="default"
+            size="sm"
             title="Refresh PM2 metrics now"
+            className="h-8"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            <span>Refresh Now</span>
-          </button>
+            Refresh Now
+          </Button>
         </div>
       </div>
 
@@ -294,61 +308,61 @@ export default function PM2Manager() {
       )}
 
       {/* Summary Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Total</span>
-            <Layers className="w-4 h-4" />
-          </div>
-          <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-            {summary.total}
-          </p>
-          <span className="text-[11px] text-zinc-400">Configured instances</span>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total</CardTitle>
+            <Layers className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{summary.total}</div>
+            <p className="text-xs text-muted-foreground mt-1">Configured instances</p>
+          </CardContent>
+        </Card>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Online</span>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Online</CardTitle>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          </div>
-          <p className="mt-2 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-            {summary.online}
-          </p>
-          <span className="text-[11px] text-zinc-400">Active services</span>
-        </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{summary.online}</div>
+            <p className="text-xs text-muted-foreground mt-1">Active services</p>
+          </CardContent>
+        </Card>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Stopped</span>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Stopped</CardTitle>
             <span className="w-2 h-2 rounded-full bg-zinc-400" />
-          </div>
-          <p className="mt-2 text-2xl font-bold text-zinc-600 dark:text-zinc-400">
-            {summary.stopped}
-          </p>
-          <span className="text-[11px] text-zinc-400">Dormant services</span>
-        </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{summary.stopped}</div>
+            <p className="text-xs text-muted-foreground mt-1">Dormant services</p>
+          </CardContent>
+        </Card>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Total Memory</span>
-            <Database className="w-4 h-4" />
-          </div>
-          <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-            {formatBytes(summary.totalMemoryBytes)}
-          </p>
-          <span className="text-[11px] text-zinc-400">Resident memory</span>
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Memory</CardTitle>
+            <Database className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatBytes(summary.totalMemoryBytes)}</div>
+            <p className="text-xs text-muted-foreground mt-1">Resident memory</p>
+          </CardContent>
+        </Card>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Avg CPU</span>
-            <Cpu className="w-4 h-4" />
-          </div>
-          <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-            {summary.avgCpuPercent}%
-          </p>
-          <span className="text-[11px] text-zinc-400">Average load</span>
-        </div>
+        <Card className="col-span-2 sm:col-span-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg CPU</CardTitle>
+            <Cpu className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{summary.avgCpuPercent}%</div>
+            <p className="text-xs text-muted-foreground mt-1">Average load</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Metrics Chart */}
@@ -411,41 +425,41 @@ export default function PM2Manager() {
       )}
 
       {/* Process Table & Cards */}
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs overflow-hidden">
-        <div className="p-4 sm:px-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-muted/20">
           <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-zinc-500" />
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <Server className="w-4 h-4 text-muted-foreground" />
+            <CardTitle className="text-base">
               Active Processes ({processes.length})
-            </h3>
+            </CardTitle>
           </div>
-        </div>
+        </CardHeader>
 
         {processes.length === 0 ? (
-          <div className="p-12 text-center text-zinc-500">
-            <Activity className="w-8 h-8 mx-auto text-zinc-400 mb-2" />
+          <div className="p-12 text-center text-muted-foreground">
+            <Activity className="w-8 h-8 mx-auto opacity-50 mb-2" />
             <p className="text-sm font-medium">No PM2 processes found</p>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs opacity-70 mt-1">
               Start PM2 processes or wait for the mock engine to load
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                  <th className="py-3 px-4 sm:px-6">Process</th>
-                  <th className="py-3 px-3">Status</th>
-                  <th className="py-3 px-3">PID</th>
-                  <th className="py-3 px-3">Ports</th>
-                  <th className="py-3 px-3">CPU</th>
-                  <th className="py-3 px-3">Memory</th>
-                  <th className="py-3 px-3">Uptime</th>
-                  <th className="py-3 px-3">Restarts</th>
-                  <th className="py-3 px-4 sm:px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Process</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>PID</TableHead>
+                  <TableHead>Ports</TableHead>
+                  <TableHead>CPU</TableHead>
+                  <TableHead>Memory</TableHead>
+                  <TableHead>Uptime</TableHead>
+                  <TableHead>Restarts</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {processes.map((proc) => {
                   const isOnline = proc.status === "online";
                   const isStopped = proc.status === "stopped";
@@ -454,177 +468,142 @@ export default function PM2Manager() {
                   const restartKey = `${proc.id}-restart`;
 
                   return (
-                    <tr
-                      key={String(proc.id)}
-                      className="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 transition-colors"
-                    >
+                    <TableRow key={String(proc.id)}>
                       {/* Name & ID */}
-                      <td className="py-3.5 px-4 sm:px-6">
+                      <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-zinc-400">
+                          <span className="font-mono text-xs text-muted-foreground">
                             #{proc.id}
                           </span>
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                            {proc.name}
-                          </span>
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                          <span>{proc.name}</span>
+                          <Badge variant="outline" className="text-[10px] uppercase font-mono px-1 py-0 h-4">
                             {proc.mode}
-                          </span>
+                          </Badge>
                         </div>
-                      </td>
+                      </TableCell>
 
                       {/* Status */}
-                      <td className="py-3.5 px-3">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
-                            isOnline
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                              : isStopped
-                              ? "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-700"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 border border-red-300 dark:border-red-800"
-                          }`}
+                      <TableCell>
+                        <Badge 
+                          variant={isOnline ? "default" : isStopped ? "secondary" : "destructive"}
+                          className={`gap-1.5 ${isOnline ? 'bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 dark:text-emerald-400' : ''}`}
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              isOnline
-                                ? "bg-emerald-500 animate-pulse"
-                                : isStopped
-                                ? "bg-zinc-400"
-                                : "bg-red-500"
+                              isOnline ? "bg-emerald-500 animate-pulse" : isStopped ? "bg-zinc-400" : "bg-white"
                             }`}
                           />
                           {proc.status}
-                        </span>
-                      </td>
+                        </Badge>
+                      </TableCell>
 
                       {/* PID */}
-                      <td className="py-3.5 px-3 font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                      <TableCell className="font-mono text-xs text-muted-foreground">
                         {proc.pid || "—"}
-                      </td>
+                      </TableCell>
 
                       {/* Ports */}
-                      <td className="py-3.5 px-3">
+                      <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {proc.ports && proc.ports.length > 0 ? (
                             proc.ports.map((port, idx) => (
-                              <span 
-                                key={idx} 
-                                className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded text-[10px] font-mono"
-                              >
+                              <Badge key={idx} variant="outline" className="font-mono text-[10px] px-1 py-0 h-4 text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
                                 :{port}
-                              </span>
+                              </Badge>
                             ))
                           ) : (
-                            <span className="text-xs text-zinc-400">—</span>
+                            <span className="text-xs text-muted-foreground">—</span>
                           )}
                         </div>
-                      </td>
+                      </TableCell>
 
                       {/* CPU */}
-                      <td className="py-3.5 px-3">
+                      <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-zinc-700 dark:text-zinc-300 min-w-[3rem]">
+                          <span className="font-mono text-xs min-w-[3rem]">
                             {proc.cpu.toFixed(1)}%
                           </span>
-                          <div className="w-16 bg-zinc-200 dark:bg-zinc-700 rounded-full h-1.5 overflow-hidden">
+                          <div className="w-16 bg-secondary rounded-full h-1.5 overflow-hidden">
                             <div
                               className={`h-1.5 rounded-full ${
                                 proc.cpu > 50
-                                  ? "bg-red-500"
+                                  ? "bg-destructive"
                                   : proc.cpu > 15
                                   ? "bg-amber-500"
                                   : "bg-emerald-500"
                               }`}
-                              style={{
-                                width: `${Math.min(100, Math.max(0, proc.cpu))}%`,
-                              }}
+                              style={{ width: `${Math.min(100, Math.max(0, proc.cpu))}%` }}
                             />
                           </div>
                         </div>
-                      </td>
+                      </TableCell>
 
                       {/* Memory */}
-                      <td className="py-3.5 px-3">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-zinc-700 dark:text-zinc-300 min-w-[4rem]">
-                            {formatBytes(proc.memory)}
-                          </span>
-                        </div>
-                      </td>
+                      <TableCell className="font-mono text-xs">
+                        {formatBytes(proc.memory)}
+                      </TableCell>
 
                       {/* Uptime */}
-                      <td className="py-3.5 px-3 text-xs text-zinc-500 dark:text-zinc-400">
+                      <TableCell className="text-xs text-muted-foreground">
                         {formatUptime(proc.uptime)}
-                      </td>
+                      </TableCell>
 
                       {/* Restarts */}
-                      <td className="py-3.5 px-3">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                      <TableCell>
+                        <Badge variant="secondary" className="font-mono text-xs font-normal">
                           {proc.restarts}
-                        </span>
-                      </td>
+                        </Badge>
+                      </TableCell>
 
                       {/* Actions */}
-                      <td className="py-3.5 px-4 sm:px-6 text-right">
-                        <div className="inline-flex items-center gap-1.5 justify-end">
-                          {/* Start button (when stopped or errored) */}
+                      <TableCell className="text-right">
+                        <div className="flex justify-end items-center gap-2">
                           {!isOnline && (
-                            <button
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
                               onClick={() => handleAction("start", proc.id)}
                               disabled={actionLoading[startKey]}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
-                              title={`Start process ${proc.name}`}
                             >
-                              <Play
-                                className={`w-3 h-3 ${
-                                  actionLoading[startKey] ? "animate-spin" : ""
-                                }`}
-                              />
-                              <span>Start</span>
-                            </button>
+                              <Play className={`w-3 h-3 mr-1 ${actionLoading[startKey] ? "animate-spin" : ""}`} />
+                              Start
+                            </Button>
                           )}
-
-                          {/* Stop button (when online) */}
+                          
                           {isOnline && (
-                            <button
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="h-7 text-xs"
                               onClick={() => handleAction("stop", proc.id)}
                               disabled={actionLoading[stopKey]}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-amber-600 hover:bg-amber-500 text-white shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
-                              title={`Stop process ${proc.name}`}
                             >
-                              <Square
-                                className={`w-3 h-3 ${
-                                  actionLoading[stopKey] ? "animate-spin" : ""
-                                }`}
-                              />
-                              <span>Stop</span>
-                            </button>
+                              <Square className={`w-3 h-3 mr-1 ${actionLoading[stopKey] ? "animate-spin" : ""}`} />
+                              Stop
+                            </Button>
                           )}
 
-                          {/* Restart button (always available) */}
-                          <button
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs"
                             onClick={() => handleAction("restart", proc.id)}
                             disabled={actionLoading[restartKey]}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors disabled:opacity-50 cursor-pointer"
-                            title={`Restart process ${proc.name}`}
                           >
-                            <RotateCw
-                              className={`w-3 h-3 ${
-                                actionLoading[restartKey] ? "animate-spin" : ""
-                              }`}
-                            />
-                            <span>Restart</span>
-                          </button>
+                            <RotateCw className={`w-3 h-3 mr-1 ${actionLoading[restartKey] ? "animate-spin" : ""}`} />
+                            Restart
+                          </Button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
