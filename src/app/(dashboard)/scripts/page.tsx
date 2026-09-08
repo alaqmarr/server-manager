@@ -5,6 +5,7 @@ import { Play, Plus, Trash2, Save, Terminal, FileCode } from "lucide-react";
 export default function ScriptsPage() {
   const [scripts, setScripts] = useState<any[]>([]);
   const [name, setName] = useState("");
+  const [linkedPm2Process, setLinkedPm2Process] = useState("");
   const [content, setContent] = useState("");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,9 +25,9 @@ export default function ScriptsPage() {
     await fetch("/api/scripts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, content })
+      body: JSON.stringify({ name, content, linkedPm2Process })
     });
-    setName(""); setContent(""); loadScripts(); setLoading(false);
+    setName(""); setContent(""); setLinkedPm2Process(""); loadScripts(); setLoading(false);
   };
 
   const handleRun = async (id: string) => {
@@ -57,7 +58,7 @@ export default function ScriptsPage() {
           {scripts.map(s => (
             <div key={s.id} className="bg-surface-950/50 border border-white/5 rounded-xl p-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-white">{s.name}</p>
+                <p className="text-sm font-semibold text-white">{s.name} {s.linkedPm2Process && <span className="ml-2 text-[10px] uppercase bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/30">Linked: {s.linkedPm2Process}</span>}</p>
                 <p className="text-xs text-surface-400 font-mono truncate max-w-xs">{s.content.split('\n')[0]}</p>
               </div>
               <div className="flex gap-2">

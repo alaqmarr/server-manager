@@ -18,6 +18,11 @@ export default function DashboardPage() {
   const memPercent = stats.memory.usagePercent.toFixed(1);
   const memUsedGB = (stats.memory.used / 1024 / 1024 / 1024).toFixed(2);
   const memTotalGB = (stats.memory.total / 1024 / 1024 / 1024).toFixed(2);
+  
+  const diskPercent = stats.disk?.usagePercent?.toFixed(1) || "0.0";
+  const diskUsedGB = ((stats.disk?.used || 0) / 1024 / 1024 / 1024).toFixed(2);
+  const diskTotalGB = ((stats.disk?.total || 0) / 1024 / 1024 / 1024).toFixed(2);
+
   const uptimeHours = (stats.uptime / 3600).toFixed(1);
 
   return (
@@ -28,7 +33,7 @@ export default function DashboardPage() {
           System <span className="text-brand-400">Dashboard</span>
         </h1>
         <p className="text-surface-400 mt-2 text-sm max-w-xl">
-          Real-time metrics for ${stats.hostname} (${stats.platform} ${stats.release})
+          Real-time metrics for {stats.hostname} ({stats.platform} {stats.release})
         </p>
       </div>
 
@@ -41,10 +46,10 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-surface-400">CPU Load (1m)</p>
-              <h3 className="text-2xl font-bold text-white">${stats.cpu.load[0].toFixed(2)}</h3>
+              <h3 className="text-2xl font-bold text-white">{stats.cpu.load[0].toFixed(2)}</h3>
             </div>
           </div>
-          <div className="text-xs text-surface-500 truncate" title={stats.cpu.model}>${stats.cpu.model}</div>
+          <div className="text-xs text-surface-500 truncate" title={stats.cpu.model}>{stats.cpu.model}</div>
         </div>
 
         <div className="card-gradient rounded-2xl p-6 border border-white/5 shadow-xl relative overflow-hidden group">
@@ -55,13 +60,30 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-surface-400">RAM Usage</p>
-              <h3 className="text-2xl font-bold text-white">${memPercent}%</h3>
+              <h3 className="text-2xl font-bold text-white">{memPercent}%</h3>
             </div>
           </div>
           <div className="w-full bg-surface-900 rounded-full h-1.5 mb-2 overflow-hidden">
             <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: `${memPercent}%` }}></div>
           </div>
-          <p className="text-xs text-surface-500">${memUsedGB} GB / ${memTotalGB} GB</p>
+          <p className="text-xs text-surface-500">{memUsedGB} GB / {memTotalGB} GB</p>
+        </div>
+
+        <div className="card-gradient rounded-2xl p-6 border border-white/5 shadow-xl relative overflow-hidden group">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"/>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl">
+              <HardDrive className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-surface-400">Disk Space</p>
+              <h3 className="text-2xl font-bold text-white">{diskPercent}%</h3>
+            </div>
+          </div>
+          <div className="w-full bg-surface-900 rounded-full h-1.5 mb-2 overflow-hidden">
+            <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${diskPercent}%` }}></div>
+          </div>
+          <p className="text-xs text-surface-500">{diskUsedGB} GB / {diskTotalGB} GB</p>
         </div>
 
         <div className="card-gradient rounded-2xl p-6 border border-white/5 shadow-xl relative overflow-hidden group">
@@ -72,24 +94,10 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-surface-400">System Uptime</p>
-              <h3 className="text-2xl font-bold text-white">${uptimeHours}h</h3>
+              <h3 className="text-2xl font-bold text-white">{uptimeHours}h</h3>
             </div>
           </div>
           <p className="text-xs text-surface-500">Running smoothly</p>
-        </div>
-
-        <div className="card-gradient rounded-2xl p-6 border border-white/5 shadow-xl relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"/>
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-blue-500/10 rounded-xl">
-              <Activity className="w-6 h-6 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-surface-400">CPU Cores</p>
-              <h3 className="text-2xl font-bold text-white">${stats.cpu.cores}</h3>
-            </div>
-          </div>
-          <p className="text-xs text-surface-500">Logical processors</p>
         </div>
       </div>
     </div>

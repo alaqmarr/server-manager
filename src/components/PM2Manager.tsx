@@ -11,6 +11,7 @@ import {
   Cpu,
   Database,
   Layers,
+  FileCode,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -66,6 +67,7 @@ export default function PM2Manager() {
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
+  const [scripts, setScripts] = useState<any[]>([]);
 
   const fetchProcesses = async () => {
     try {
@@ -99,6 +101,25 @@ export default function PM2Manager() {
 
     return () => clearInterval(interval);
   }, []);
+
+  
+  const handleRunScript = async (scriptId: string) => {
+    const key = `script-${scriptId}`;
+    setActionLoading((prev) => ({ ...prev, [key]: true }));
+    try {
+      const res = await fetch(`/api/scripts/${scriptId}/execute`, { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        alert("Script executed successfully!\nOutput:\n" + (data.output || "No output"));
+      } else {
+        alert("Failed to execute script: " + data.error);
+      }
+    } catch (error: any) {
+      alert("Error executing script.");
+    } finally {
+      setActionLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
 
   const handleAction = async (action: "start" | "stop" | "restart", id: number | string) => {
     const actionKey = `${id}-${action}`;
@@ -266,7 +287,8 @@ export default function PM2Manager() {
                   const isOnline = proc.status === "online";
                   const startKey = `${proc.id}-start`;
                   const stopKey = `${proc.id}-stop`;
-                  const restartKey = `${proc.id}-restart`;
+                                    const restartKey = `${proc.id}-restart`;
+                  const linkedScripts = scripts.filter(s => s.linkedPm2Process === proc.name || s.linkedPm2Process === String(proc.id));
 
                   return (
                     <tr key={String(proc.id)} className="hover:bg-white/[0.02] transition-colors group">
@@ -344,6 +366,7 @@ export default function PM2Manager() {
                               <Square className={`w-4 h-4 ${actionLoading[stopKey] ? "animate-spin" : ""}`} />
                             </button>
                           )}
+                          
                           <button
                             onClick={() => handleAction("restart", proc.id)}
                             disabled={actionLoading[restartKey]}
@@ -352,6 +375,17 @@ export default function PM2Manager() {
                           >
                             <RotateCw className={`w-4 h-4 ${actionLoading[restartKey] ? "animate-spin" : ""}`} />
                           </button>
+                          {linkedScripts.map((s: any) => (
+                             <button
+                               key={s.id}
+                               onClick={() => handleRunScript(s.id)}
+                               disabled={actionLoading[`script-${s.id}`]}
+                               className="w-8 h-8 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 flex items-center justify-center transition-colors disabled:opacity-50"
+                               title={`Run: ${s.name}`}
+                             >
+                               <FileCode className={`w-4 h-4 ${actionLoading[`script-${s.id}`] ? "animate-spin" : ""}`} />
+                             </button>
+                          ))}
                         </div>
                       </td>
                     </tr>
