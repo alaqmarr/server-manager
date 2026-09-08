@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PM2 Manager Dashboard",
-  description: "Manage PM2 processes, open ports, and Nginx configurations",
+  title: "Nexus | Server Manager",
+  description: "Advanced PM2, Network, and Server Administration Dashboard",
 };
 
 export default function RootLayout({
@@ -23,11 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-foreground">
+    <html lang="en" className="dark">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-surface-950 text-slate-300 selection:bg-brand-500/30 selection:text-brand-100`}
+      >
         {children}
       </body>
     </html>

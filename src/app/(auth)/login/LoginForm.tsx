@@ -1,112 +1,92 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { LogIn, AlertCircle } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const setupSuccess = searchParams.get("setup") === "success";
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-
-    if (!username.trim() || !password) {
-      setError("Please enter both username and password.");
-      return;
-    }
-
     setLoading(true);
+    setError("");
 
     try {
       const res = await signIn("credentials", {
-        username: username.trim(),
+        username,
         password,
         redirect: false,
       });
 
-      if (!res || res.error) {
-        setError("Invalid username or password.");
-        setLoading(false);
-        return;
+      if (res?.error) {
+        setError("Invalid credentials. Please try again.");
+      } else {
+        router.push("/");
+        router.refresh();
       }
-
-      router.push("/");
-      router.refresh();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "An unexpected error occurred.";
-      setError(msg);
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {setupSuccess && (
-        <div className="p-3 text-sm text-green-700 bg-green-100 border border-green-200 rounded-md dark:bg-green-950/50 dark:text-green-300 dark:border-green-900">
-          Setup completed successfully. Please sign in with your credentials.
-        </div>
-      )}
-
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-200 rounded-md dark:bg-red-950/50 dark:text-red-300 dark:border-red-900">
-          {error}
+        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <p>{error}</p>
         </div>
       )}
 
-      <div>
-        <label
-          htmlFor="username"
-          className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
+      <div className="space-y-1">
+        <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest pl-1">
           Username
         </label>
         <input
-          id="username"
-          name="username"
           type="text"
-          required
-          autoComplete="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          required
+          className="w-full px-4 py-3 bg-surface-950/50 border border-white/5 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 rounded-xl text-slate-200 outline-none transition-all placeholder:text-slate-600"
           placeholder="admin"
-          className="mt-1 block w-full px-3 py-2 bg-background dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground placeholder-zinc-400"
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
+      <div className="space-y-1">
+        <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest pl-1">
           Password
         </label>
         <input
-          id="password"
-          name="password"
           type="password"
-          required
-          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full px-4 py-3 bg-surface-950/50 border border-white/5 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 rounded-xl text-slate-200 outline-none transition-all placeholder:text-slate-600"
           placeholder="••••••••"
-          className="mt-1 block w-full px-3 py-2 bg-background dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground placeholder-zinc-400"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 cursor-pointer"
+        className="w-full mt-2 py-3 px-4 bg-brand-500 hover:bg-brand-400 text-surface-950 font-bold rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_30px_rgba(45,212,191,0.5)]"
       >
-        {loading ? "Signing In..." : "Sign In"}
+        {loading ? (
+          <div className="w-5 h-5 border-2 border-surface-950 border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <>
+            <LogIn className="w-5 h-5" />
+            Sign In
+          </>
+        )}
       </button>
     </form>
   );

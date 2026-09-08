@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useSyncExternalStore } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
-  Activity,
-  Play,
-  Square,
-  RotateCw,
-  RefreshCw,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   Server,
+  Activity,
+  RotateCw,
+  Square,
+  Play,
+  RefreshCw,
   Cpu,
   Database,
   Layers,
@@ -25,585 +22,345 @@ import {
   Legend,
 } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
 export interface PM2Process {
   id: number | string;
   name: string;
-  pid: number;
-  status: "online" | "stopped" | "errored";
-  mode: "fork" | "cluster";
+  status: string;
   cpu: number;
   memory: number;
   uptime: number;
   restarts: number;
+  mode: string;
+  pid?: number;
   ports?: number[];
 }
 
-export interface PM2Summary {
-  total: number;
-  online: number;
-  stopped: number;
-  totalMemoryBytes: number;
-  avgCpuPercent: number;
+function formatBytes(bytes: number) {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
-export interface PM2ListResponse {
-  success: boolean;
-  mode: "real" | "mock";
-  timestamp: number;
-  summary: PM2Summary;
-  processes: PM2Process[];
+function formatUptime(uptimeMs: number) {
+  if (uptimeMs === 0) return "0s";
+  const seconds = Math.floor((uptimeMs / 1000) % 60);
+  const minutes = Math.floor((uptimeMs / (1000 * 60)) % 60);
+  const hours = Math.floor((uptimeMs / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(uptimeMs / (1000 * 60 * 60 * 24));
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (parts.length === 0 || seconds > 0) parts.push(`${seconds}s`);
+
+  return parts.slice(0, 2).join(" ");
 }
-
-function formatBytes(bytes: number): string {
-  if (!bytes || bytes <= 0) return "0 MB";
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) {
-    return `${(mb / 1024).toFixed(2)} GB`;
-  }
-  return `${mb.toFixed(1)} MB`;
-}
-
-function formatUptime(uptime: number): string {
-  if (!uptime || uptime <= 0) return "—";
-  const diff = Math.max(0, Date.now() - uptime);
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) return `${days}d ${hours % 24}h`;
-  if (hours > 0) return `${hours}h ${minutes % 60}m`;
-  if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
-  return `${seconds}s`;
-}
-
-const emptySubscribe = () => () => {};
 
 export default function PM2Manager() {
   const [processes, setProcesses] = useState<PM2Process[]>([]);
-  const [summary, setSummary] = useState<PM2Summary>({
-    total: 0,
-    online: 0,
-    stopped: 0,
-    totalMemoryBytes: 0,
-    avgCpuPercent: 0,
-  });
-  const [mode, setMode] = useState<"real" | "mock">("mock");
-  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
-  const [countdown, setCountdown] = useState<number>(60);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
-  const [statusMessage, setStatusMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
 
-  const isClient = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
-
-  const loadData = useCallback(async () => {
+  const fetchProcesses = async () => {
     try {
-      const res = await fetch("/api/pm2", { cache: "no-store" });
+      const res = await fetch("/api/pm2");
       if (!res.ok) {
-        throw new Error(`Failed to fetch PM2 status: HTTP ${res.status}`);
+        throw new Error(`Failed to fetch processes: ${res.statusText}`);
       }
-      const data: PM2ListResponse = await res.json();
-      if (data.success) {
-        setProcesses(data.processes || []);
-        setSummary(
-          data.summary || {
-            total: data.processes?.length || 0,
-            online: data.processes?.filter((p) => p.status === "online").length || 0,
-            stopped: data.processes?.filter((p) => p.status === "stopped").length || 0,
-            totalMemoryBytes: 0,
-            avgCpuPercent: 0,
-          }
-        );
-        setMode(data.mode);
-        setLastUpdated(data.timestamp || Date.now());
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error fetching PM2 data";
-      console.error(msg);
-      setStatusMessage({ type: "error", text: msg });
-    }
-  }, []);
-
-  // Initial load & 60-second polling countdown timer
-  useEffect(() => {
-    const initTimer = setTimeout(() => {
-      void loadData();
-    }, 0);
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          void loadData();
-          return 60;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      clearTimeout(initTimer);
-      clearInterval(timer);
-    };
-  }, [loadData]);
-
-  const handleManualRefresh = async () => {
-    setIsRefreshing(true);
-    setCountdown(60);
-    try {
-      await loadData();
-    } finally {
-      setIsRefreshing(false);
+      const data = await res.json();
+      setProcesses(data.processes || []);
+      setError(null);
+      setLastRefreshed(new Date());
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "An error occurred");
     }
   };
 
-  const handleAction = async (
-    action: "start" | "stop" | "restart",
-    id: string | number
-  ) => {
-    const key = `${id}-${action}`;
-    setActionLoading((prev) => ({ ...prev, [key]: true }));
-    setStatusMessage(null);
+  const loadData = async (isManualRefresh = false) => {
+    if (isManualRefresh) setIsRefreshing(true);
+    await fetchProcesses();
+    setIsLoading(false);
+    if (isManualRefresh) setIsRefreshing(false);
+  };
 
+  useEffect(() => {
+    loadData();
+    const interval = setInterval(() => {
+      fetchProcesses();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleAction = async (action: "start" | "stop" | "restart", id: number | string) => {
+    const actionKey = `${id}-${action}`;
+    setActionLoading((prev) => ({ ...prev, [actionKey]: true }));
     try {
       const res = await fetch("/api/pm2/action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, id }),
       });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || data.message || `Action ${action} failed`);
+      if (!res.ok) {
+        throw new Error(`Failed to ${action} process ${id}`);
       }
-
-      setStatusMessage({
-        type: "success",
-        text: `Action "${action}" on process ${id} completed successfully (${data.mode} mode).`,
-      });
-
-      // Instantly refresh list to show updated state
-      await loadData();
-      setCountdown(60);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to execute action";
-      setStatusMessage({ type: "error", text: msg });
+      await fetchProcesses();
+    } catch (err: any) {
+      alert(err.message);
     } finally {
-      setActionLoading((prev) => ({ ...prev, [key]: false }));
+      setActionLoading((prev) => ({ ...prev, [actionKey]: false }));
     }
   };
 
-  // Prepare chart data
-  const chartData = processes.map((p) => ({
-    name: p.name,
-    cpu: p.cpu,
-    memoryMB: Number((p.memory / (1024 * 1024)).toFixed(1)),
-    status: p.status,
-  }));
+  const summary = useMemo(() => {
+    const total = processes.length;
+    let online = 0;
+    let stopped = 0;
+    let totalMemoryBytes = 0;
+    let totalCpu = 0;
+
+    processes.forEach((p) => {
+      if (p.status === "online") online++;
+      if (p.status === "stopped") stopped++;
+      totalMemoryBytes += p.memory;
+      totalCpu += p.cpu;
+    });
+
+    return {
+      total,
+      online,
+      stopped,
+      totalMemoryBytes,
+      avgCpuPercent: total > 0 ? (totalCpu / total).toFixed(1) : "0.0",
+    };
+  }, [processes]);
+
+  const chartData = useMemo(() => {
+    return processes.map((p) => ({
+      name: p.name,
+      cpu: p.cpu,
+      memoryMB: Math.round(p.memory / (1024 * 1024)),
+    }));
+  }, [processes]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+        <Activity className="w-10 h-10 animate-pulse mb-4 opacity-50" />
+        <p className="font-medium tracking-wide">Connecting to PM2 Daemon...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* PM2 Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-card rounded-xl border border-border shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg text-emerald-600 dark:text-emerald-400">
-            <Activity className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-lg font-bold text-foreground">
-                PM2 Process Manager
-              </h2>
-              <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  mode === "real"
-                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                    : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-300 dark:border-blue-800"
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    mode === "real" ? "bg-emerald-500 animate-pulse" : "bg-blue-500"
-                  }`}
-                />
-                {mode === "real" ? "Host PM2 Active" : "Mock PM2 Engine (Jitter Active)"}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Real-time monitoring and lifecycle process controls
-              {lastUpdated && ` • Last refreshed ${new Date(lastUpdated).toLocaleTimeString()}`}
+      {error && (
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center justify-between">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {/* Control Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-gradient p-4 rounded-2xl">
+        <div>
+          <h2 className="text-white font-semibold text-lg flex items-center gap-2">
+            System Resources
+          </h2>
+          {lastRefreshed && (
+            <p className="text-xs text-slate-400 mt-1">
+              Last updated: {lastRefreshed.toLocaleTimeString()}
             </p>
-          </div>
+          )}
         </div>
-
-        {/* Polling Countdown & Refresh Button */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-xs font-mono text-secondary-foreground border border-border">
-            <Clock className="w-3.5 h-3.5 text-zinc-400 animate-spin-slow" />
-            <span>Poll:</span>
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-              {countdown}s
-            </span>
-          </div>
-
-          <Button
-            onClick={handleManualRefresh}
-            disabled={isRefreshing}
-            variant="default"
-            size="sm"
-            title="Refresh PM2 metrics now"
-            className="h-8"
-          >
-            <RefreshCw
-              className={`w-3.5 h-3.5 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            Refresh Now
-          </Button>
-        </div>
-      </div>
-
-      {/* Status Notifications */}
-      {statusMessage && (
-        <div
-          className={`p-4 rounded-lg flex items-center justify-between gap-3 text-sm ${
-            statusMessage.type === "success"
-              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
-              : "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800"
-          }`}
+        <button
+          onClick={() => loadData(true)}
+          disabled={isRefreshing}
+          className="flex items-center gap-2 px-4 py-2 bg-brand-500/20 hover:bg-brand-500/30 border border-brand-500/50 text-brand-400 text-sm font-semibold rounded-lg transition-all disabled:opacity-50"
         >
-          <div className="flex items-center gap-2">
-            {statusMessage.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            ) : (
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
-            )}
-            <span>{statusMessage.text}</span>
-          </div>
-          <button
-            onClick={() => setStatusMessage(null)}
-            className="text-xs underline cursor-pointer hover:opacity-75"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Summary Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total</CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{summary.total}</div>
-            <p className="text-xs text-muted-foreground mt-1">Configured instances</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Online</CardTitle>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{summary.online}</div>
-            <p className="text-xs text-muted-foreground mt-1">Active services</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Stopped</CardTitle>
-            <span className="w-2 h-2 rounded-full bg-zinc-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{summary.stopped}</div>
-            <p className="text-xs text-muted-foreground mt-1">Dormant services</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Memory</CardTitle>
-            <Database className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatBytes(summary.totalMemoryBytes)}</div>
-            <p className="text-xs text-muted-foreground mt-1">Resident memory</p>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-2 sm:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg CPU</CardTitle>
-            <Cpu className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{summary.avgCpuPercent}%</div>
-            <p className="text-xs text-muted-foreground mt-1">Average load</p>
-          </CardContent>
-        </Card>
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+          Force Sync
+        </button>
       </div>
 
-      {/* Metrics Chart */}
-      {isClient && processes.length > 0 && (
-        <div className="p-5 bg-card rounded-xl border border-border shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">
-                Resource Utilization by Process
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                CPU % and Memory allocation (updated on 60s cycle)
-              </p>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {[
+          { label: "Total", value: summary.total, icon: Layers, color: "text-blue-400" },
+          { label: "Online", value: summary.online, icon: Activity, color: "text-brand-400" },
+          { label: "Stopped", value: summary.stopped, icon: Square, color: "text-slate-500" },
+          { label: "Total RAM", value: formatBytes(summary.totalMemoryBytes), icon: Database, color: "text-purple-400" },
+          { label: "Avg CPU", value: summary.avgCpuPercent + "%", icon: Cpu, color: "text-pink-400" },
+        ].map((stat, i) => (
+          <div key={i} className="card-gradient rounded-2xl p-5 border border-white/5 relative overflow-hidden group">
+            <div className="flex items-center justify-between z-10 relative">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</span>
+              <stat.icon className={`w-4 h-4 ${stat.color}`} />
+            </div>
+            <div className={`mt-3 text-2xl font-black ${stat.color} drop-shadow-sm`}>
+              {stat.value}
             </div>
           </div>
-          <div className="h-52 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis
-                  dataKey="name"
-                  stroke="#888888"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#888888"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(24, 24, 27, 0.95)",
-                    border: "1px solid rgba(63, 63, 70, 0.5)",
-                    borderRadius: "0.5rem",
-                    color: "#fff",
-                    fontSize: "0.75rem",
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: "0.75rem", paddingTop: "0.5rem" }} />
-                <Bar
-                  dataKey="cpu"
-                  name="CPU (%)"
-                  fill="#10b981"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={45}
-                />
-                <Bar
-                  dataKey="memoryMB"
-                  name="Memory (MB)"
-                  fill="#3b82f6"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={45}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        ))}
+      </div>
+
+      {/* Visualizer */}
+      {processes.length > 0 && (
+        <div className="card-gradient rounded-2xl p-6 border border-white/5 h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <XAxis dataKey="name" stroke="#475569" fontSize={11} tickLine={false} axisLine={false} />
+              <YAxis yAxisId="left" stroke="#475569" fontSize={11} tickLine={false} axisLine={false} />
+              <YAxis yAxisId="right" orientation="right" stroke="#475569" fontSize={11} tickLine={false} axisLine={false} />
+              <Tooltip 
+                cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}
+                itemStyle={{ color: '#e2e8f0', fontSize: '12px' }}
+                labelStyle={{ color: '#94a3b8', fontSize: '11px', marginBottom: '4px' }}
+              />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: '#94a3b8' }} />
+              <Bar yAxisId="left" dataKey="cpu" name="CPU (%)" fill="#2dd4bf" radius={[4, 4, 0, 0]} barSize={20} />
+              <Bar yAxisId="right" dataKey="memoryMB" name="Memory (MB)" fill="#818cf8" radius={[4, 4, 0, 0]} barSize={20} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
 
-      {/* Process Table & Cards */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-muted/20">
-          <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-muted-foreground" />
-            <CardTitle className="text-base">
-              Active Processes ({processes.length})
-            </CardTitle>
+      {/* Main Data Table */}
+      <div className="card-gradient rounded-2xl border border-white/5 overflow-hidden">
+        <div className="p-5 border-b border-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Server className="w-5 h-5 text-brand-400" />
+            <h3 className="text-white font-bold">Live Processes</h3>
           </div>
-        </CardHeader>
+        </div>
 
         {processes.length === 0 ? (
-          <div className="p-12 text-center text-muted-foreground">
-            <Activity className="w-8 h-8 mx-auto opacity-50 mb-2" />
-            <p className="text-sm font-medium">No PM2 processes found</p>
-            <p className="text-xs opacity-70 mt-1">
-              Start PM2 processes or wait for the mock engine to load
-            </p>
+          <div className="p-16 text-center">
+            <Server className="w-12 h-12 mx-auto text-slate-700 mb-4" />
+            <p className="text-slate-400 font-medium">No PM2 instances found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">Process</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>PID</TableHead>
-                  <TableHead>Ports</TableHead>
-                  <TableHead>CPU</TableHead>
-                  <TableHead>Memory</TableHead>
-                  <TableHead>Uptime</TableHead>
-                  <TableHead>Restarts</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <table className="w-full text-left border-collapse whitespace-nowrap">
+              <thead>
+                <tr className="bg-surface-900/50 text-[10px] uppercase tracking-widest text-slate-500">
+                  <th className="py-4 px-6 font-semibold">Instance</th>
+                  <th className="py-4 px-4 font-semibold">Status</th>
+                  <th className="py-4 px-4 font-semibold">CPU</th>
+                  <th className="py-4 px-4 font-semibold">RAM</th>
+                  <th className="py-4 px-4 font-semibold">Uptime</th>
+                  <th className="py-4 px-4 font-semibold">Ports</th>
+                  <th className="py-4 px-6 text-right font-semibold">Controls</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
                 {processes.map((proc) => {
                   const isOnline = proc.status === "online";
-                  const isStopped = proc.status === "stopped";
                   const startKey = `${proc.id}-start`;
                   const stopKey = `${proc.id}-stop`;
                   const restartKey = `${proc.id}-restart`;
 
                   return (
-                    <TableRow key={String(proc.id)}>
-                      {/* Name & ID */}
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-muted-foreground">
-                            #{proc.id}
-                          </span>
-                          <span>{proc.name}</span>
-                          <Badge variant="outline" className="text-[10px] uppercase font-mono px-1 py-0 h-4">
+                    <tr key={String(proc.id)} className="hover:bg-white/[0.02] transition-colors group">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono text-[10px] text-slate-500 w-4 block text-center">#{proc.id}</span>
+                          <span className="font-bold text-slate-200">{proc.name}</span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-white/5 text-slate-400 border border-white/10">
                             {proc.mode}
-                          </Badge>
-                        </div>
-                      </TableCell>
-
-                      {/* Status */}
-                      <TableCell>
-                        <Badge 
-                          variant={isOnline ? "default" : isStopped ? "secondary" : "destructive"}
-                          className={`gap-1.5 ${isOnline ? 'bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 dark:text-emerald-400' : ''}`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isOnline ? "bg-emerald-500 animate-pulse" : isStopped ? "bg-zinc-400" : "bg-background"
-                            }`}
-                          />
-                          {proc.status}
-                        </Badge>
-                      </TableCell>
-
-                      {/* PID */}
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {proc.pid || "—"}
-                      </TableCell>
-
-                      {/* Ports */}
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {proc.ports && proc.ports.length > 0 ? (
-                            proc.ports.map((port, idx) => (
-                              <Badge key={idx} variant="outline" className="font-mono text-[10px] px-1 py-0 h-4 text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800">
-                                :{port}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
-                          )}
-                        </div>
-                      </TableCell>
-
-                      {/* CPU */}
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs min-w-[3rem]">
-                            {proc.cpu.toFixed(1)}%
                           </span>
-                          <div className="w-16 bg-secondary rounded-full h-1.5 overflow-hidden">
+                        </div>
+                      </td>
+                      
+                      <td className="py-4 px-4">
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          isOnline ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-brand-500 animate-pulse' : 'bg-slate-500'}`} />
+                          {proc.status}
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono text-xs text-slate-300 w-10">{proc.cpu.toFixed(1)}%</span>
+                          <div className="w-16 bg-surface-950 rounded-full h-1.5 border border-white/5">
                             <div
-                              className={`h-1.5 rounded-full ${
-                                proc.cpu > 50
-                                  ? "bg-destructive"
-                                  : proc.cpu > 15
-                                  ? "bg-amber-500"
-                                  : "bg-emerald-500"
-                              }`}
+                              className={`h-full rounded-full ${proc.cpu > 50 ? "bg-red-500" : proc.cpu > 15 ? "bg-yellow-500" : "bg-brand-500"}`}
                               style={{ width: `${Math.min(100, Math.max(0, proc.cpu))}%` }}
                             />
                           </div>
                         </div>
-                      </TableCell>
+                      </td>
 
-                      {/* Memory */}
-                      <TableCell className="font-mono text-xs">
+                      <td className="py-4 px-4 font-mono text-xs text-slate-300">
                         {formatBytes(proc.memory)}
-                      </TableCell>
+                      </td>
 
-                      {/* Uptime */}
-                      <TableCell className="text-xs text-muted-foreground">
+                      <td className="py-4 px-4 font-mono text-xs text-slate-400">
                         {formatUptime(proc.uptime)}
-                      </TableCell>
+                      </td>
 
-                      {/* Restarts */}
-                      <TableCell>
-                        <Badge variant="secondary" className="font-mono text-xs font-normal">
-                          {proc.restarts}
-                        </Badge>
-                      </TableCell>
+                      <td className="py-4 px-4">
+                        <div className="flex flex-wrap gap-1">
+                          {proc.ports?.length ? (
+                            proc.ports.map((p, idx) => (
+                              <span key={idx} className="px-1.5 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded text-[10px] font-mono">
+                                :{p}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-slate-600 text-xs">—</span>
+                          )}
+                        </div>
+                      </td>
 
-                      {/* Actions */}
-                      <TableCell className="text-right">
-                        <div className="flex justify-end items-center gap-2">
-                          {!isOnline && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                      <td className="py-4 px-6">
+                        <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                          {!isOnline ? (
+                            <button
                               onClick={() => handleAction("start", proc.id)}
                               disabled={actionLoading[startKey]}
+                              className="w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center transition-colors disabled:opacity-50"
+                              title="Start"
                             >
-                              <Play className={`w-3 h-3 mr-1 ${actionLoading[startKey] ? "animate-spin" : ""}`} />
-                              Start
-                            </Button>
-                          )}
-                          
-                          {isOnline && (
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="h-7 text-xs"
+                              <Play className={`w-4 h-4 ${actionLoading[startKey] ? "animate-spin" : ""}`} />
+                            </button>
+                          ) : (
+                            <button
                               onClick={() => handleAction("stop", proc.id)}
                               disabled={actionLoading[stopKey]}
+                              className="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center transition-colors disabled:opacity-50"
+                              title="Stop"
                             >
-                              <Square className={`w-3 h-3 mr-1 ${actionLoading[stopKey] ? "animate-spin" : ""}`} />
-                              Stop
-                            </Button>
+                              <Square className={`w-4 h-4 ${actionLoading[stopKey] ? "animate-spin" : ""}`} />
+                            </button>
                           )}
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs"
+                          <button
                             onClick={() => handleAction("restart", proc.id)}
                             disabled={actionLoading[restartKey]}
+                            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center transition-colors disabled:opacity-50"
+                            title="Restart"
                           >
-                            <RotateCw className={`w-3 h-3 mr-1 ${actionLoading[restartKey] ? "animate-spin" : ""}`} />
-                            Restart
-                          </Button>
+                            <RotateCw className={`w-4 h-4 ${actionLoading[restartKey] ? "animate-spin" : ""}`} />
+                          </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
