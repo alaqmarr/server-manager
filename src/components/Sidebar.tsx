@@ -12,7 +12,12 @@ import {
   Menu,
   X,
   LogOut,
-  Hexagon
+  Hexagon,
+  FolderOpen,
+  Globe,
+  Server,
+  Clock,
+  FileText
 } from "lucide-react";
 
 export function Sidebar({ userName }: { userName: string }) {
@@ -20,12 +25,16 @@ export function Sidebar({ userName }: { userName: string }) {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Overview", href: "/", icon: LayoutDashboard },
-    { name: "PM2 Instances", href: "/pm2", icon: Activity },
-    { name: "Network Ports", href: "/ports", icon: Network },
-    { name: "Nginx Configs", href: "/nginx", icon: FileCode },
-    { name: "System Terminal", href: "/terminal", icon: Terminal },
-  ];
+  { name: "Dashboard", href: "/", icon: Activity },
+  { name: "File Explorer", href: "/files", icon: FolderOpen },
+  { name: "Nginx Manager", href: "/nginx", icon: Globe },
+  { name: "PM2 Manager", href: "/pm2", icon: Server },
+  { name: "Port Mappings", href: "/ports", icon: Network },
+  { name: "Task Runner", href: "/scripts", icon: FileCode },
+  { name: "Cron Jobs", href: "/cron", icon: Clock },
+  { name: "System Logs", href: "/logs", icon: FileText },
+  { name: "Web Terminal", href: "/terminal", icon: Terminal },
+];
 
   return (
     <>

@@ -26,6 +26,15 @@ db.exec(`
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS scripts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    content TEXT NOT NULL,
+    description TEXT,
+    linkedPm2Process TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TRIGGER IF NOT EXISTS one_admin_only
   BEFORE INSERT ON users
   BEGIN
@@ -82,3 +91,12 @@ export function getAdminByUsername(username: string): UserRecord | null {
 }
 
 export default db;
+
+export interface ScriptRecord {
+  id: number;
+  name: string;
+  content: string;
+  description: string | null;
+  linkedPm2Process: string | null;
+  createdAt: string;
+}
