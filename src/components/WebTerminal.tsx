@@ -16,6 +16,7 @@ const stripAnsi = (str: string) => {
 
 export default function WebTerminal() {
   const [command, setCommand] = useState("");
+  const [cwd, setCwd] = useState("");
   const [history, setHistory] = useState<OutputLine[]>([
     { type: "stdout", text: "Welcome to Nexus Root Terminal." },
     { type: "stdout", text: "Running as standard user. Be careful." },
@@ -41,7 +42,7 @@ export default function WebTerminal() {
       const res = await fetch("/api/terminal/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: currentCmd }),
+        body: JSON.stringify({ command: currentCmd, cwd }),
       });
       if (res.status === 401) { window.location.href = '/login'; return; }
       const data = await res.json();
@@ -71,7 +72,7 @@ export default function WebTerminal() {
         </div>
         <div className="text-xs font-mono text-slate-400 font-semibold flex items-center gap-2">
           <TerminalIcon className="w-3 h-3" />
-          nexus@server:~
+          nexus@server:{cwd || "~"}
         </div>
         <div className="w-16" /> {/* Spacer */}
       </div>
