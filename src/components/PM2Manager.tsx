@@ -223,14 +223,14 @@ export default function PM2Manager() {
   return (
     <div className="space-y-6">
       {/* PM2 Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-card rounded-xl border border-border shadow-xs">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg text-emerald-600 dark:text-emerald-400">
             <Activity className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+              <h2 className="text-lg font-bold text-foreground">
                 PM2 Process Manager
               </h2>
               <span
@@ -248,7 +248,7 @@ export default function PM2Manager() {
                 {mode === "real" ? "Host PM2 Active" : "Mock PM2 Engine (Jitter Active)"}
               </span>
             </div>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Real-time monitoring and lifecycle process controls
               {lastUpdated && ` • Last refreshed ${new Date(lastUpdated).toLocaleTimeString()}`}
             </p>
@@ -257,7 +257,7 @@ export default function PM2Manager() {
 
         {/* Polling Countdown & Refresh Button */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-xs font-mono text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-xs font-mono text-secondary-foreground border border-border">
             <Clock className="w-3.5 h-3.5 text-zinc-400 animate-spin-slow" />
             <span>Poll:</span>
             <span className="font-semibold text-emerald-600 dark:text-emerald-400">
@@ -367,13 +367,13 @@ export default function PM2Manager() {
 
       {/* Metrics Chart */}
       {isClient && processes.length > 0 && (
-        <div className="p-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <div className="p-5 bg-card rounded-xl border border-border shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              <h3 className="text-sm font-semibold text-foreground">
                 Resource Utilization by Process
               </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs text-muted-foreground">
                 CPU % and Memory allocation (updated on 60s cycle)
               </p>
             </div>
@@ -490,7 +490,7 @@ export default function PM2Manager() {
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              isOnline ? "bg-emerald-500 animate-pulse" : isStopped ? "bg-zinc-400" : "bg-white"
+                              isOnline ? "bg-emerald-500 animate-pulse" : isStopped ? "bg-zinc-400" : "bg-background"
                             }`}
                           />
                           {proc.status}

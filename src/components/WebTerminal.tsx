@@ -300,7 +300,7 @@ export default function WebTerminal({
   ];
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
       {/* Terminal Title Bar */}
       <div className="px-4 py-3 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2 select-none">
         <div className="flex items-center gap-3">

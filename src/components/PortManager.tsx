@@ -100,7 +100,7 @@ export default function PortManager() {
   return (
     <div className="space-y-6">
       {/* Header & Controls Card */}
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
@@ -108,7 +108,7 @@ export default function PortManager() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-xl font-bold text-foreground">
                   Active Port Discovery
                 </h2>
                 <span
@@ -122,7 +122,7 @@ export default function PortManager() {
                   {mode === "real" ? "Host Sockets" : "Simulated Network"}
                 </span>
               </div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
+              <p className="text-sm text-muted-foreground mt-0.5">
                 Real-time inspection of listening TCP and UDP network sockets mapped to running processes
               </p>
             </div>
@@ -137,7 +137,7 @@ export default function PortManager() {
             <button
               onClick={() => fetchPorts(true)}
               disabled={isRefreshing || isLoading}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-foreground hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
@@ -148,33 +148,33 @@ export default function PortManager() {
         </div>
 
         {/* Metric Overview Counters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800/80">
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 dark:border-zinc-800">
-            <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-zinc-100 /80">
+          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 ">
+            <div className="text-xs font-medium text-muted-foreground">
               Total Listening
             </div>
-            <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mt-1">
+            <div className="text-2xl font-bold text-foreground mt-1">
               {ports.length}
             </div>
           </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 dark:border-zinc-800">
-            <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 ">
+            <div className="text-xs font-medium text-muted-foreground">
               TCP Listeners
             </div>
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
               {tcpCount}
             </div>
           </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 dark:border-zinc-800">
-            <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 ">
+            <div className="text-xs font-medium text-muted-foreground">
               UDP Sockets
             </div>
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">
               {udpCount}
             </div>
           </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 dark:border-zinc-800">
-            <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg border border-zinc-200/60 ">
+            <div className="text-xs font-medium text-muted-foreground">
               Identified Services
             </div>
             <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
@@ -192,17 +192,17 @@ export default function PortManager() {
               placeholder="Search by port, service name, address, or PID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border bg-background dark:bg-zinc-950 text-foreground placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
-          <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg border border-zinc-200 dark:border-zinc-700 self-stretch sm:self-auto">
+          <div className="flex items-center gap-1 bg-secondary p-1 rounded-lg border border-border self-stretch sm:self-auto">
             <button
               onClick={() => setProtocolFilter("ALL")}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                 protocolFilter === "ALL"
-                  ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  ? "bg-card text-foreground shadow-xs"
+                  : "text-zinc-600  hover:text-foreground dark:hover:text-zinc-200"
               }`}
             >
               All Protocols
@@ -212,7 +212,7 @@ export default function PortManager() {
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                 protocolFilter === "TCP"
                   ? "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold shadow-xs"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  : "text-zinc-600  hover:text-foreground dark:hover:text-zinc-200"
               }`}
             >
               TCP
@@ -222,7 +222,7 @@ export default function PortManager() {
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                 protocolFilter === "UDP"
                   ? "bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-semibold shadow-xs"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  : "text-zinc-600  hover:text-foreground dark:hover:text-zinc-200"
               }`}
             >
               UDP
@@ -249,11 +249,11 @@ export default function PortManager() {
       )}
 
       {/* Port Table */}
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="py-16 text-center">
             <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto" />
-            <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-3 text-sm text-muted-foreground">
               Discovering active listening ports...
             </p>
           </div>
@@ -263,7 +263,7 @@ export default function PortManager() {
             <p className="mt-3 text-base font-semibold text-zinc-700 dark:text-zinc-300">
               No matching listening ports found
             </p>
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-xs text-muted-foreground">
               Try adjusting your search criteria or protocol filters
             </p>
           </div>
@@ -271,7 +271,7 @@ export default function PortManager() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/75 dark:bg-zinc-800/40 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                <tr className="border-b border-border bg-zinc-50/75 dark:bg-zinc-800/40 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   <th className="py-3 px-4">Port</th>
                   <th className="py-3 px-4">Protocol</th>
                   <th className="py-3 px-4">Service / Process</th>
@@ -286,8 +286,8 @@ export default function PortManager() {
                     key={`${entry.port}-${entry.protocol}-${entry.address}-${idx}`}
                     className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
                   >
-                    <td className="py-3.5 px-4 font-mono font-bold text-zinc-900 dark:text-zinc-100">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                    <td className="py-3.5 px-4 font-mono font-bold text-foreground">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary border border-border">
                         :{entry.port}
                       </span>
                     </td>
@@ -318,10 +318,10 @@ export default function PortManager() {
                         ) : null}
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-xs text-zinc-600 dark:text-zinc-400">
+                    <td className="py-3.5 px-4 font-mono text-xs text-zinc-600 ">
                       {entry.address}
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                    <td className="py-3.5 px-4 font-mono text-xs text-muted-foreground">
                       {entry.pid > 0 ? entry.pid : "—"}
                     </td>
                     <td className="py-3.5 px-4 text-right">

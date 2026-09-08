@@ -7,11 +7,11 @@ export default async function DashboardPage() {
   return (
     <div className="p-8 w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
-      <div className="pb-6 border-b border-zinc-200 dark:border-zinc-800">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+      <div className="pb-6 border-b border-border">
+        <h1 className="text-3xl font-bold text-foreground">
           Overview
         </h1>
-        <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-muted-foreground">
           Server health and quick access to management tools.
         </p>
       </div>
@@ -20,7 +20,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         <Link
           href="/pm2"
-          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-emerald-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
+          className="p-6 bg-card/50 rounded-2xl border border-border/80 shadow-sm hover:border-emerald-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
               <Activity className="w-5 h-5 text-emerald-500" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             Manager
           </p>
           <p className="mt-2 text-sm text-zinc-500">
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
 
         <Link
           href="/ports"
-          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-blue-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
+          className="p-6 bg-card/50 rounded-2xl border border-border/80 shadow-sm hover:border-blue-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
@@ -50,7 +50,7 @@ export default async function DashboardPage() {
               <Network className="w-5 h-5 text-blue-500" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             Discovery
           </p>
           <p className="mt-2 text-sm text-zinc-500">
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
 
         <Link
           href="/nginx"
-          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-emerald-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
+          className="p-6 bg-card/50 rounded-2xl border border-border/80 shadow-sm hover:border-emerald-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
               <FileCode className="w-5 h-5 text-emerald-500" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             Editor
           </p>
           <p className="mt-2 text-sm text-zinc-500">
@@ -80,7 +80,7 @@ export default async function DashboardPage() {
 
         <Link
           href="/terminal"
-          className="p-6 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-sm hover:border-purple-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
+          className="p-6 bg-card/50 rounded-2xl border border-border/80 shadow-sm hover:border-purple-500/50 hover:shadow-md hover:bg-zinc-900 transition-all group cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
               <Terminal className="w-5 h-5 text-purple-500" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             Console
           </p>
           <p className="mt-2 text-sm text-zinc-500">

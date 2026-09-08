@@ -237,7 +237,7 @@ export default function NginxEditor() {
   return (
     <div className="space-y-6">
       {/* Header & File Selector Card */}
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm">
+      <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -245,7 +245,7 @@ export default function NginxEditor() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-xl font-bold text-foreground">
                   Nginx Configuration Editor
                 </h2>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
@@ -253,7 +253,7 @@ export default function NginxEditor() {
                   Secured & Versioned
                 </span>
               </div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
+              <p className="text-sm text-muted-foreground mt-0.5">
                 Inspect, modify, and validate Nginx virtual host and gateway configurations with automatic .bak rollbacks
               </p>
             </div>
@@ -264,7 +264,7 @@ export default function NginxEditor() {
             <button
               onClick={handleTestSyntax}
               disabled={isTesting || isLoadingContent}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-background dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer disabled:opacity-50"
             >
               <FileCheck
                 className={`w-4 h-4 text-blue-500 ${isTesting ? "animate-pulse" : ""}`}
@@ -275,7 +275,7 @@ export default function NginxEditor() {
             {isDirty && (
               <button
                 onClick={handleDiscard}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-background dark:bg-zinc-800 text-zinc-600  hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
                 Discard
@@ -294,7 +294,7 @@ export default function NginxEditor() {
         </div>
 
         {/* File Tabs & Metadata Bar */}
-        <div className="mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="mt-6 pt-6 border-t border-zinc-100 /80 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
               <FolderOpen className="w-3.5 h-3.5" />
@@ -314,8 +314,8 @@ export default function NginxEditor() {
                   onClick={() => setSelectedFile(file.relativePath)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
                     selectedFile === file.relativePath
-                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-semibold shadow-xs"
-                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-foreground font-semibold shadow-xs"
+                      : "bg-secondary text-zinc-600  hover:bg-zinc-200 dark:hover:bg-zinc-700"
                   }`}
                 >
                   <FileCode className="w-3.5 h-3.5" />
@@ -337,7 +337,7 @@ export default function NginxEditor() {
 
           {/* Current File Metadata */}
           {currentEntry && (
-            <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
               <span className="flex items-center gap-1">
                 <HardDrive className="w-3 h-3" />
                 {formatBytes(currentEntry.size)}
