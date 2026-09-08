@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react";
 import { Play, Plus, Trash2, Save, Terminal, FileCode } from "lucide-react";
 
+
+const stripAnsi = (str: string) => {
+  if (!str) return "";
+  return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+};
+
 export default function ScriptsPage() {
   const [scripts, setScripts] = useState<any[]>([]);
   const [name, setName] = useState("");
@@ -35,7 +41,7 @@ export default function ScriptsPage() {
     setOutput("Executing...");
     const res = await fetch(`/api/scripts/${id}/execute`, { method: "POST" });
     const data = await res.json();
-    setOutput(data.output || data.error || "No output");
+    setOutput(stripAnsi(data.output || data.error || "No output"));
     setLoading(false);
   };
 

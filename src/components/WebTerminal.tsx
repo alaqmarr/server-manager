@@ -8,6 +8,12 @@ interface OutputLine {
   text: string;
 }
 
+
+const stripAnsi = (str: string) => {
+  if (!str) return "";
+  return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+};
+
 export default function WebTerminal() {
   const [command, setCommand] = useState("");
   const [history, setHistory] = useState<OutputLine[]>([
@@ -43,8 +49,8 @@ export default function WebTerminal() {
       if (data.error) {
         setHistory((prev) => [...prev, { type: "error", text: data.error }]);
       } else {
-        if (data.stdout) setHistory((prev) => [...prev, { type: "stdout", text: data.stdout }]);
-        if (data.stderr) setHistory((prev) => [...prev, { type: "stderr", text: data.stderr }]);
+        if (data.stdout) setHistory((prev) => [...prev, { type: "stdout", text: stripAnsi(data.stdout) }]);
+        if (data.stderr) setHistory((prev) => [...prev, { type: "stderr", text: stripAnsi(data.stderr) }]);
       }
     } catch (err: any) {
       setHistory((prev) => [...prev, { type: "error", text: err.message }]);

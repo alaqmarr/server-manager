@@ -60,6 +60,12 @@ function formatUptime(uptimeMs: number) {
   return parts.slice(0, 2).join(" ");
 }
 
+
+const stripAnsi = (str: string) => {
+  if (!str) return "";
+  return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+};
+
 export default function PM2Manager() {
   const [processes, setProcesses] = useState<PM2Process[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -110,7 +116,7 @@ export default function PM2Manager() {
       const res = await fetch(`/api/scripts/${scriptId}/execute`, { method: "POST" });
       const data = await res.json();
       if (data.success) {
-        alert("Script executed successfully!\nOutput:\n" + (data.output || "No output"));
+        alert("Script executed successfully!\nOutput:\n" + stripAnsi(data.output || "No output"));
       } else {
         alert("Failed to execute script: " + data.error);
       }
