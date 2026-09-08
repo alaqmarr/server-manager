@@ -10,6 +10,7 @@ export interface NginxFileEntry {
   relativePath: string;
   size: number;
   modifiedAt: string;
+  isEnabled?: boolean;
 }
 
 export interface NginxFilesResponse {
@@ -224,11 +225,13 @@ function scanDir(dir: string, baseDir: string, results: NginxFileEntry[]): void 
       if (isConf || isNginxConf || isSitesConfig) {
         try {
           const stats = fs.statSync(fullPath);
+          const isEnabled = relPath.startsWith("sites-available/") ? fs.existsSync(path.join(baseDir, "sites-enabled", entry.name)) : undefined;
           results.push({
             name: entry.name,
             relativePath: relPath,
             size: stats.size,
             modifiedAt: stats.mtime.toISOString(),
+            isEnabled,
           });
         } catch {
           // Ignore unreadable files
@@ -423,4 +426,122 @@ export async function testNginxSyntax(content?: string, relativePath?: string): 
     success: true,
     output: "nginx: the configuration file syntax is ok\nnginx: configuration file test is successful",
   };
+}
+
+/**
+ * Creates a new Nginx configuration file in sites-available.
+ */
+export async function createNginxConfig(name: string, template: 'proxy' | 'static', domain: string, portOrPath: string): Promise<NginxSaveResponse> {
+  const baseDir = getNginxBaseDir();
+  const sitesAvailable = path.join(baseDir, 'sites-available');
+  if (!fs.existsSync(sitesAvailable)) {
+    fs.mkdirSync(sitesAvailable, { recursive: true });
+  }
+
+  const safeName = name.replace(/[^a-zA-Z0-9.-]/g, '');
+  const filePath = path.join(sitesAvailable, `${safeName}.conf`);
+  if (fs.existsSync(filePath)) {
+    throw new NginxError("Configuration file already exists", 400);
+  }
+
+  let content = '';
+  if (template === 'proxy') {
+    content = `server {
+    listen 80;
+    server_name ${domain};
+
+    location / {
+        proxy_pass http://127.0.0.1:${portOrPath};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+    }
+}`;
+  } else {
+    content = `server {
+    listen 80;
+    server_name ${domain};
+
+    root ${portOrPath};
+    index index.html index.htm;
+
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+}`;
+  }
+
+  fs.writeFileSync(filePath, content, 'utf-8');
+
+  return {
+    success: true,
+    message: "Configuration created successfully",
+  };
+}
+
+/**
+ * Toggles a site by creating/removing symlinks in sites-enabled.
+ */
+export async function toggleNginxSite(name: string, enable: boolean): Promise<{ success: boolean; message: string }> {
+  const baseDir = getNginxBaseDir();
+  const availablePath = path.join(baseDir, 'sites-available', name);
+  const enabledPath = path.join(baseDir, 'sites-enabled', name);
+
+  if (!fs.existsSync(availablePath)) {
+    throw new NginxError("Configuration file not found in sites-available", 404);
+  }
+
+  const enabledDir = path.join(baseDir, 'sites-enabled');
+  if (!fs.existsSync(enabledDir)) {
+    fs.mkdirSync(enabledDir, { recursive: true });
+  }
+
+  try {
+    if (enable) {
+      if (!fs.existsSync(enabledPath)) {
+        await execAsync(`sudo -n ln -s ${availablePath} ${enabledPath}`).catch(() => {
+          // fallback
+          fs.symlinkSync(availablePath, enabledPath);
+        });
+      }
+    } else {
+      if (fs.existsSync(enabledPath)) {
+        await execAsync(`sudo -n rm ${enabledPath}`).catch(() => {
+          fs.unlinkSync(enabledPath);
+        });
+      }
+    }
+    
+    // Attempt to reload nginx
+    await execAsync(`sudo -n nginx -s reload`).catch(() => {});
+
+    return { success: true, message: `Site ${enable ? 'enabled' : 'disabled'} successfully` };
+  } catch (err: any) {
+    throw new NginxError(err.message || "Failed to toggle site", 500);
+  }
+}
+
+/**
+ * Generates an SSL certificate using certbot.
+ */
+export async function generateSSL(domain: string, email: string): Promise<{ success: boolean; message: string; output: string }> {
+  try {
+    // Check if certbot is installed
+    await execAsync("which certbot");
+  } catch {
+    throw new NginxError("Certbot is not installed on this server. Please install it using: sudo apt-get install certbot python3-certbot-nginx", 400);
+  }
+
+  try {
+    const { stdout, stderr } = await execAsync(`sudo -n certbot --nginx -d ${domain} --non-interactive --agree-tos -m ${email}`);
+    return {
+      success: true,
+      message: "SSL certificate generated successfully",
+      output: stdout || stderr,
+    };
+  } catch (err: any) {
+    throw new NginxError(err.message || "Failed to generate SSL certificate", 500);
+  }
 }
