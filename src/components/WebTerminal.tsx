@@ -37,7 +37,7 @@ export default function WebTerminal() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command: currentCmd }),
       });
-      const data = await res.json();
+      if (res.status === 401) { window.location.href = '/login'; return; }\n      const data = await res.json();
 
       if (data.error) {
         setHistory((prev) => [...prev, { type: "error", text: data.error }]);

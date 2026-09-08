@@ -18,7 +18,7 @@ export default function NginxEditor() {
   const fetchFiles = async () => {
     try {
       const res = await fetch("/api/nginx/files");
-      const data = await res.json();
+      if (res.status === 401) { window.location.href = '/login'; return; }\n      const data = await res.json();
       if (data.files) {
         setFiles(data.files);
         if (data.files.length > 0) {

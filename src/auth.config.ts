@@ -26,6 +26,9 @@ export const authConfig: NextAuthConfig = {
 
       // Deny access to protected routes if unauthenticated -> redirects to signIn page (/login)
       if (!isLoggedIn) {
+        if (nextUrl.pathname.startsWith("/api/")) {
+          return Response.json({ error: "Unauthorized" }, { status: 401 });
+        }
         return false;
       }
 
