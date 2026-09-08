@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Folder, File, CornerLeftUp, Save, Plus, Trash2, Edit3, X } from "lucide-react";
+import { Folder, File, CornerLeftUp, Save, Plus, Trash2, Edit3, X, Upload } from "lucide-react";
+import { useRef } from "react";
 import Editor from "@monaco-editor/react";
 
 export default function FilesPage() {
@@ -11,6 +12,7 @@ export default function FilesPage() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [createName, setCreateName] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { loadDir(); }, []);
 
@@ -52,6 +54,26 @@ export default function FilesPage() {
     loadDir(currentDir);
   };
 
+  
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("targetDir", currentDir);
+    
+    const res = await fetch("/api/files/upload", { method: "POST", body: formData });
+    if (res.ok) {
+      loadDir(currentDir);
+    } else {
+      alert("Upload failed.");
+    }
+    setLoading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleCreate = async (isDir: boolean) => {
     if (!createName) return;
     const target = currentDir + "/" + createName;
@@ -68,6 +90,9 @@ export default function FilesPage() {
           <h3 className="text-white font-semibold truncate text-xs">{currentDir}</h3>
           <div className="flex gap-2">
             <input placeholder="New file/dir" value={createName} onChange={e=>setCreateName(e.target.value)} className="w-full bg-surface-950 border border-white/10 rounded py-1 px-2 text-xs text-white" />
+            
+            <input type="file" ref={fileInputRef} className="hidden" onChange={handleUpload} />
+            <button onClick={() => fileInputRef.current?.click()} className="p-1 bg-purple-500/10 text-purple-400 rounded hover:bg-purple-500/20" title="Upload File"><Upload className="w-4 h-4"/></button>
             <button onClick={() => handleCreate(false)} className="p-1 bg-brand-500/10 text-brand-400 rounded hover:bg-brand-500/20"><Plus className="w-4 h-4"/></button>
             <button onClick={() => handleCreate(true)} className="p-1 bg-yellow-500/10 text-yellow-400 rounded hover:bg-yellow-500/20"><Folder className="w-4 h-4"/></button>
           </div>
