@@ -50,6 +50,7 @@ export default function WebTerminal() {
       if (data.error) {
         setHistory((prev) => [...prev, { type: "error", text: data.error }]);
       } else {
+        if (data.cwd) setCwd(data.cwd);
         if (data.stdout) setHistory((prev) => [...prev, { type: "stdout", text: stripAnsi(data.stdout) }]);
         if (data.stderr) setHistory((prev) => [...prev, { type: "stderr", text: stripAnsi(data.stderr) }]);
       }
