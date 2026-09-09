@@ -292,9 +292,14 @@ export async function executePM2Action(
 
   // Handle self-restarting gracefully so the API connection isn't severed instantly
   const isSelf = process.env.name === strId || strId === "server-manager" || strId === "pmmanager";
+  
+  // 🚨 FIX: Strip the Nexus PORT so we don't poison other apps
+  const cleanEnv = { ...process.env };
+  delete cleanEnv.PORT;
+
   if (action === "restart" && isSelf) {
     setTimeout(() => {
-      execFile("pm2", ["restart", strId], { shell: process.platform === "win32" }, (error) => {
+      execFile("pm2", ["restart", strId], { shell: process.platform === "win32", env: cleanEnv }, (error) => {
         if (error) console.error(`[PM2 CLI] Failed to self-restart: ${error.message}`);
       });
     }, 1500); // 1.5s delay to allow the HTTP response to be fully sent
@@ -313,6 +318,7 @@ export async function executePM2Action(
     await execFileAsync("pm2", [action, strId], {
       timeout: 15000,
       shell: process.platform === "win32",
+      env: cleanEnv,
     });
     cliExecuted = true;
   } catch (err: unknown) {
@@ -369,7 +375,12 @@ export async function executePM2Action(
 export async function getPM2Logs(appName: string, lines: number = 15): Promise<string> {
   return new Promise((resolve) => {
     const { exec } = require("child_process");
-    exec(`pm2 logs ${appName} --lines ${lines} --nostream`, (error: any, stdout: string, stderr: string) => {
+    
+    // 🚨 FIX: Strip the Nexus PORT so we don't poison other apps
+    const cleanEnv = { ...process.env };
+    delete cleanEnv.PORT;
+
+    exec(`pm2 logs ${appName} --lines ${lines} --nostream`, { env: cleanEnv }, (error: any, stdout: string, stderr: string) => {
       if (error) { resolve('Error fetching logs: ' + error.message); return; }
       resolve(stdout || stderr || 'No logs found.');
     });
