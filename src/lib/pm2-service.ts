@@ -291,23 +291,23 @@ export async function executePM2Action(
   }
 
   // Handle self-restarting gracefully so the API connection isn't severed instantly
-  const isSelf = process.env.name === strId || strId === "server-manager" || strId === "pmmanager";
+  const isSelf = process.env.name === strId || strId === "server-manager" || strId === "pmmanager" || strId === "all";
   
   // 🚨 FIX: Strip the Nexus PORT so we don't poison other apps
   const cleanEnv = { ...process.env };
   delete cleanEnv.PORT;
 
-  if (action === "restart" && isSelf) {
+  if ((action === "restart" || action === "stop") && isSelf) {
     setTimeout(() => {
-      execFile("pm2", ["restart", strId], { shell: process.platform === "win32", env: cleanEnv }, (error) => {
-        if (error) console.error(`[PM2 CLI] Failed to self-restart: ${error.message}`);
+      execFile("pm2", [action, strId], { shell: process.platform === "win32", env: cleanEnv }, (error) => {
+        if (error) console.error(`[PM2 CLI] Failed to self-${action}: ${error.message}`);
       });
-    }, 1500); // 1.5s delay to allow the HTTP response to be fully sent
+    }, 2000); // 2.0s delay to allow the Discord Webhook HTTP response to fully complete
     
     return {
       success: true,
       mode: "real",
-      message: `Self-restart initiated. The dashboard will be back online in a few seconds.`,
+      message: `${action} initiated on ${strId}. If this affects the Nexus server, it will go offline momentarily.`,
     };
   }
 
