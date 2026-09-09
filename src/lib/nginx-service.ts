@@ -548,18 +548,19 @@ export async function toggleNginxSite(name: string, enable: boolean): Promise<{ 
 
   try {
     if (enable) {
-      if (!fs.existsSync(enabledPath)) {
-        await execAsync(`sudo -n ln -s ${availablePath} ${enabledPath}`).catch(() => {
-          // fallback
-          fs.symlinkSync(availablePath, enabledPath);
-        });
-      }
-    } else {
-      if (fs.existsSync(enabledPath)) {
-        await execAsync(`sudo -n rm ${enabledPath}`).catch(() => {
+      await execAsync(`sudo -n ln -sf "${availablePath}" "${enabledPath}"`).catch(() => {
+        // fallback
+        if (fs.existsSync(enabledPath) || fs.lstatSync(enabledPath, { throwIfNoEntry: false })) {
           fs.unlinkSync(enabledPath);
-        });
-      }
+        }
+        fs.symlinkSync(availablePath, enabledPath);
+      });
+    } else {
+      await execAsync(`sudo -n rm -f "${enabledPath}"`).catch(() => {
+        if (fs.existsSync(enabledPath) || fs.lstatSync(enabledPath, { throwIfNoEntry: false })) {
+          fs.unlinkSync(enabledPath);
+        }
+      });
     }
     
     // Attempt to reload nginx
