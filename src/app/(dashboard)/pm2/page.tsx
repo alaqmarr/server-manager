@@ -1,4 +1,5 @@
 import PM2Manager from "@/components/PM2Manager";
+import VitalsChart from "@/components/VitalsChart";
 import { Activity } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,10 @@ export default function PM2Page() {
       </div>
       
       <PM2Manager />
+
+      <div className="pt-6 border-t border-white/5">
+        <VitalsChart />
+      </div>
     </div>
   );
 }

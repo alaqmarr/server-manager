@@ -2,19 +2,25 @@
 /**
  * PM2 Manager Dashboard - Unified E2E Test Runner
  * Executes Tier 1 (Features), Tier 2 (Boundaries), Tier 3 (Combinations),
- * and Tier 4 (Workloads) against the live running server.
+ * and Tier 4 (Workloads) against the live running server or self-test reference mock.
+ *
+ * Covers both Baseline M1-M5 and Enterprise Tiers (RBAC, Webhooks, Discord, SSE, Vitals, Fail2Ban, Uptime).
  *
  * Usage:
  *   npx tsx tests/e2e/runner.ts [options]
  *   node --experimental-strip-types tests/e2e/runner.ts [options]
  *
  * Options:
- *   --url=<url>        Target server URL (default: http://localhost:3000)
- *   --tier=<1|2|3|4|all> Run specific tier or all (default: all)
- *   --bail             Stop execution on first failed test
- *   --verbose, -v      Print individual test names as they run
- *   --wait=<seconds>   Wait up to N seconds for server to become reachable
- *   --help, -h         Show help message
+ *   --url=<url>            Target server URL (default: http://localhost:3000)
+ *   --tier=<1|2|3|4|all>   Run specific tier or all (default: all)
+ *   --suite=<all|baseline|enterprise> Select suite scope (default: all)
+ *   --enterprise           Run only enterprise tiers
+ *   --baseline             Run only baseline M1-M5 tiers
+ *   --self-test            Run in-process spec server self-test
+ *   --bail                 Stop execution on first failed test
+ *   --verbose, -v          Print individual test names as they run
+ *   --wait=<seconds>       Wait up to N seconds for server to become reachable
+ *   --help, -h             Show help message
  */
 
 import { TestClient } from './client';
@@ -23,11 +29,18 @@ import { registerTier1Tests } from './tier1-features.test';
 import { registerTier2Tests } from './tier2-boundaries.test';
 import { registerTier3Tests } from './tier3-combinations.test';
 import { registerTier4Tests } from './tier4-workloads.test';
+import {
+  registerEnterpriseTier1Tests,
+  registerEnterpriseTier2Tests,
+  registerEnterpriseTier3Tests,
+  registerEnterpriseTier4Tests,
+} from './enterprise-tiers.test';
 import { MockE2EServer } from './mock-server';
 
 interface CliOptions {
   url: string;
   tier: '1' | '2' | '3' | '4' | 'all';
+  suite: 'all' | 'baseline' | 'enterprise';
   bail: boolean;
   verbose: boolean;
   wait: number;
@@ -40,6 +53,7 @@ function parseArgs(args: string[]): CliOptions {
   const options: CliOptions = {
     url: process.env.TEST_SERVER_URL || process.env.BASE_URL || 'http://localhost:3000',
     tier: 'all',
+    suite: 'all',
     bail: false,
     verbose: true,
     wait: 0,
@@ -55,6 +69,15 @@ function parseArgs(args: string[]): CliOptions {
       options.selfTest = true;
     } else if (arg === '--list' || arg === '--dry-run') {
       options.list = true;
+    } else if (arg === '--enterprise' || arg === '--enterprise-only') {
+      options.suite = 'enterprise';
+    } else if (arg === '--baseline' || arg === '--baseline-only') {
+      options.suite = 'baseline';
+    } else if (arg.startsWith('--suite=')) {
+      const s = arg.substring(8).trim().toLowerCase();
+      if (['all', 'baseline', 'enterprise'].includes(s)) {
+        options.suite = s as any;
+      }
     } else if (arg.startsWith('--url=')) {
       options.url = arg.substring(6).trim();
     } else if (arg.startsWith('--tier=')) {
@@ -84,13 +107,17 @@ Usage:
   npx tsx tests/e2e/runner.ts [options]
 
 Options:
-  --url=<url>         Target server base URL (default: http://localhost:3000)
-  --tier=<1|2|3|4|all> Select tier to run (default: all)
-  --bail              Exit immediately on first test failure
-  --verbose, -v       Detailed logging of test execution
-  --quiet, -q         Minimal summary only
-  --wait=<seconds>    Wait up to N seconds for server to be reachable
-  --help, -h          Show this message
+  --url=<url>                   Target server base URL (default: http://localhost:3000)
+  --tier=<1|2|3|4|all>          Select tier to run (default: all)
+  --suite=<all|baseline|enterprise> Select suite scope (default: all)
+  --enterprise                  Shortcut for --suite=enterprise
+  --baseline                    Shortcut for --suite=baseline
+  --self-test                   Verify test suite against reference in-process server
+  --bail                        Exit immediately on first test failure
+  --verbose, -v                 Detailed logging of test execution
+  --quiet, -q                   Minimal summary only
+  --wait=<seconds>              Wait up to N seconds for server to be reachable
+  --help, -h                    Show this message
 `);
 }
 
@@ -116,31 +143,18 @@ async function checkServerReachable(url: string, waitSec = 0): Promise<boolean> 
   return false;
 }
 
-export async function main() {
-  const args = process.argv.slice(2);
-  const options = parseArgs(args);
+function registerConfiguredTests(
+  collector: TestSuiteCollector,
+  client: TestClient,
+  options: CliOptions,
+  credentials: { username: string; password: string },
+  devCredentials: { username: string; password: string }
+) {
+  const runBaseline = options.suite === 'all' || options.suite === 'baseline';
+  const runEnterprise = options.suite === 'all' || options.suite === 'enterprise';
 
-  if (options.help) {
-    printHelp();
-    process.exit(0);
-  }
-
-  console.log('\x1b[1m\x1b[36m=================================================================\x1b[0m');
-  console.log('\x1b[1m\x1b[36m         PM2 Manager Dashboard - E2E Verification Suite          \x1b[0m');
-  console.log('\x1b[1m\x1b[36m=================================================================\x1b[0m');
-  console.log(`Target URL : \x1b[33m${options.url}\x1b[0m`);
-  console.log(`Target Tier: \x1b[33m${options.tier.toUpperCase()}\x1b[0m`);
-  console.log(`Bail on err: \x1b[33m${options.bail}\x1b[0m\n`);
-
-  // If --list or --dry-run, register tests and print inventory without connecting
-  if (options.list) {
-    const client = new TestClient(options.url);
-    const credentials = {
-      username: process.env.TEST_ADMIN_USER || 'admin',
-      password: process.env.TEST_ADMIN_PASS || 'password123',
-    };
-    const collector = new TestSuiteCollector();
-
+  // Baseline M1-M5
+  if (runBaseline) {
     if (options.tier === '1' || options.tier === 'all') {
       registerTier1Tests(collector, client, credentials);
     }
@@ -153,6 +167,56 @@ export async function main() {
     if (options.tier === '4' || options.tier === 'all') {
       registerTier4Tests(collector, client, credentials);
     }
+  }
+
+  // Enterprise Tiers
+  if (runEnterprise) {
+    if (options.tier === '1' || options.tier === 'all') {
+      registerEnterpriseTier1Tests(collector, client, credentials, devCredentials);
+    }
+    if (options.tier === '2' || options.tier === 'all') {
+      registerEnterpriseTier2Tests(collector, client, credentials, devCredentials);
+    }
+    if (options.tier === '3' || options.tier === 'all') {
+      registerEnterpriseTier3Tests(collector, client, credentials, devCredentials);
+    }
+    if (options.tier === '4' || options.tier === 'all') {
+      registerEnterpriseTier4Tests(collector, client, credentials, devCredentials);
+    }
+  }
+}
+
+export async function main() {
+  const args = process.argv.slice(2);
+  const options = parseArgs(args);
+
+  if (options.help) {
+    printHelp();
+    process.exit(0);
+  }
+
+  console.log('\x1b[1m\x1b[36m=================================================================\x1b[0m');
+  console.log('\x1b[1m\x1b[36m         Nexus PM2 Manager - Unified E2E Verification Suite      \x1b[0m');
+  console.log('\x1b[1m\x1b[36m=================================================================\x1b[0m');
+  console.log(`Target URL   : \x1b[33m${options.url}\x1b[0m`);
+  console.log(`Target Suite : \x1b[33m${options.suite.toUpperCase()}\x1b[0m`);
+  console.log(`Target Tier  : \x1b[33m${options.tier.toUpperCase()}\x1b[0m`);
+  console.log(`Bail on err  : \x1b[33m${options.bail}\x1b[0m\n`);
+
+  const credentials = {
+    username: process.env.TEST_ADMIN_USER || 'admin',
+    password: process.env.TEST_ADMIN_PASS || 'password123',
+  };
+  const devCredentials = {
+    username: process.env.TEST_DEV_USER || 'developer',
+    password: process.env.TEST_DEV_PASS || 'password123',
+  };
+
+  // If --list or --dry-run, register tests and print inventory without connecting
+  if (options.list) {
+    const client = new TestClient(options.url);
+    const collector = new TestSuiteCollector();
+    registerConfiguredTests(collector, client, options, credentials, devCredentials);
 
     const cases = collector.getCases();
     console.log(`\x1b[1m\x1b[32mDiscovered ${cases.length} test cases:\x1b[0m\n`);
@@ -192,26 +256,9 @@ export async function main() {
   }
 
   const client = new TestClient(options.url);
-  const credentials = {
-    username: process.env.TEST_ADMIN_USER || 'admin',
-    password: process.env.TEST_ADMIN_PASS || 'password123',
-  };
-
   const collector = new TestSuiteCollector();
 
-  // Register requested tiers
-  if (options.tier === '1' || options.tier === 'all') {
-    registerTier1Tests(collector, client, credentials);
-  }
-  if (options.tier === '2' || options.tier === 'all') {
-    registerTier2Tests(collector, client);
-  }
-  if (options.tier === '3' || options.tier === 'all') {
-    registerTier3Tests(collector, client, credentials);
-  }
-  if (options.tier === '4' || options.tier === 'all') {
-    registerTier4Tests(collector, client, credentials);
-  }
+  registerConfiguredTests(collector, client, options, credentials, devCredentials);
 
   const allCases = collector.getCases();
   console.log(`Discovered \x1b[1m${allCases.length}\x1b[0m test cases to execute.\n`);

@@ -12,7 +12,8 @@ export const authConfig: NextAuthConfig = {
       const isOnSetup = nextUrl.pathname === "/setup";
       const isPublicApi =
         nextUrl.pathname.startsWith("/api/auth") ||
-        nextUrl.pathname.startsWith("/api/setup");
+        nextUrl.pathname.startsWith("/api/setup") ||
+        nextUrl.pathname.startsWith("/api/deploy/webhook");
 
       // Always allow public APIs and setup route
       if (isPublicApi) return true;

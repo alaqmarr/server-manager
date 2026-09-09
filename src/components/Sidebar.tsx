@@ -33,6 +33,7 @@ export function Sidebar({ userName }: { userName: string }) {
   { name: "File Explorer", href: "/files", icon: FolderOpen },
   { name: "Nginx Manager", href: "/nginx", icon: Globe },
   { name: "PM2 Manager", href: "/pm2", icon: Server },
+  { name: "Uptime Monitor", href: "/uptime", icon: Clock },
   { name: "Port Mappings", href: "/ports", icon: Network },
   { name: "Port Visualizer", href: "/port-visualizer", icon: LayoutGrid },
   { name: "Task Runner", href: "/scripts", icon: FileCode },

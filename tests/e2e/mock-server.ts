@@ -8,6 +8,7 @@ export class MockE2EServer {
   private server: http.Server | null = null;
   private adminConfigured = false;
   private activeSessionToken = 'test-e2e-session-token-valid';
+  private developerSessionToken = 'test-e2e-session-token-developer';
   private currentCwd = process.cwd();
   private nginxFiles: Record<string, string> = {
     'nginx.conf': 'user www-data;\nworker_processes auto;\nevents { worker_connections 1024; }\n',
@@ -25,6 +26,22 @@ export class MockE2EServer {
       uptime: Date.now() - 3600000,
       restarts: 0,
     },
+  ];
+  private uptimeMonitors: any[] = [
+    {
+      id: 1,
+      name: 'Production Web App',
+      url: 'https://example.com/health',
+      intervalSeconds: 60,
+      createdAt: new Date().toISOString(),
+      uptimePercentage: 99.9,
+      avgResponseTimeMs: 42.5,
+      lastStatus: 'UP' as const,
+    },
+  ];
+  private fail2banBanned: any[] = [
+    { ip: '192.168.1.100', jail: 'sshd', bannedAt: new Date().toISOString() },
+    { ip: '10.0.0.50', jail: 'nginx-http-auth', bannedAt: new Date().toISOString() },
   ];
 
   public async start(port = 39999): Promise<number> {
@@ -54,9 +71,27 @@ export class MockE2EServer {
     });
   }
 
-  private isAuthenticated(req: http.IncomingMessage): boolean {
+  private getUserRole(req: http.IncomingMessage): 'admin' | 'developer' | null {
     const cookie = req.headers.cookie || '';
-    return cookie.includes(this.activeSessionToken);
+    if (cookie.includes(this.activeSessionToken)) {
+      return 'admin';
+    }
+    if (cookie.includes(this.developerSessionToken)) {
+      return 'developer';
+    }
+    return null;
+  }
+
+  private isAuthenticated(req: http.IncomingMessage): boolean {
+    return this.getUserRole(req) !== null;
+  }
+
+  private isAdminOnlyRoute(pathname: string): boolean {
+    if (pathname === '/api/terminal/execute') return true;
+    if (pathname.startsWith('/api/nginx/')) return true;
+    if (pathname === '/api/env') return true;
+    if (pathname === '/api/fail2ban/unban') return true;
+    return false;
   }
 
   private sendJson(res: http.ServerResponse, status: number, data: any, headers: Record<string, string> = {}) {
@@ -103,7 +138,8 @@ export class MockE2EServer {
   private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
     const url = new URL(req.url || '/', 'http://127.0.0.1');
     const pathname = url.pathname;
-    const isAuth = this.isAuthenticated(req);
+    const role = this.getUserRole(req);
+    const isAuth = role !== null;
 
     // Root page
     if (pathname === '/') {
@@ -135,14 +171,28 @@ export class MockE2EServer {
           { 'Set-Cookie': `authjs.session-token=${this.activeSessionToken}; Path=/; HttpOnly` }
         );
       }
+      if (body.username === 'developer' && body.password === 'password123') {
+        return this.sendJson(
+          res,
+          200,
+          { url: 'http://localhost:3000/' },
+          { 'Set-Cookie': `authjs.session-token=${this.developerSessionToken}; Path=/; HttpOnly` }
+        );
+      }
       return this.sendRedirect(res, '/login?error=CredentialsSignin', 302);
     }
 
     // NextAuth Session
     if (pathname === '/api/auth/session') {
-      if (isAuth) {
+      if (role === 'admin') {
         return this.sendJson(res, 200, {
-          user: { name: 'admin', email: null, image: null },
+          user: { name: 'admin', email: null, image: null, role: 'admin' },
+          expires: new Date(Date.now() + 86400000).toISOString(),
+        });
+      }
+      if (role === 'developer') {
+        return this.sendJson(res, 200, {
+          user: { name: 'developer', email: null, image: null, role: 'developer' },
           expires: new Date(Date.now() + 86400000).toISOString(),
         });
       }
@@ -168,11 +218,249 @@ export class MockE2EServer {
       return this.sendJson(res, 201, { success: true, message: 'Admin created' });
     }
 
-    // Protected API Endpoints Guard
+    // Public Git Deployment Webhook (whitelisted, no auth required)
+    if (pathname === '/api/deploy/webhook') {
+      if (req.method !== 'POST') {
+        return this.sendJson(res, 405, { error: 'Method not allowed' });
+      }
+      const ctype = req.headers['content-type'] || '';
+      const body = await this.readBody(req);
+      if (ctype.includes('application/json') && typeof body === 'string') {
+        return this.sendJson(res, 400, { error: 'Malformed JSON payload' });
+      }
+      if (!body || (typeof body === 'string' && body.trim() === '') || (typeof body === 'object' && Object.keys(body).length === 0)) {
+        return this.sendJson(res, 400, { error: 'Missing or empty payload' });
+      }
+      const deploymentId = 'deploy_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      return this.sendJson(res, 200, {
+        success: true,
+        message: 'Deployment triggered',
+        deploymentId,
+        status: 'queued',
+      });
+    }
+
+    // Protected API Endpoints Guard & RBAC enforcement
     if (pathname.startsWith('/api/')) {
       if (!isAuth) {
         return this.sendJson(res, 401, { error: 'Unauthorized' });
       }
+      if (this.isAdminOnlyRoute(pathname) && role !== 'admin') {
+        return this.sendJson(res, 403, { error: 'Forbidden' });
+      }
+    }
+
+    // Environment variables endpoint (Admin only)
+    if (pathname === '/api/env') {
+      return this.sendJson(res, 200, {
+        success: true,
+        env: {
+          NODE_ENV: 'test',
+          PORT: '3000',
+          NEXTAUTH_URL: 'http://localhost:3000',
+        },
+      });
+    }
+
+    // Discord Alert Test Endpoint
+    if (pathname === '/api/discord/test' || pathname === '/api/alerts/test') {
+      return this.sendJson(res, 200, {
+        success: true,
+        statusCode: 204,
+        message: 'Discord webhook test delivered',
+      });
+    }
+
+    // Real-Time SSE Log Streamer
+    if (pathname === '/api/pm2/logs/stream') {
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache, no-transform',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
+      });
+
+      const initialEvent = {
+        timestamp: new Date().toISOString(),
+        process: url.searchParams.get('process') || 'pmmanager-web',
+        type: 'stdout',
+        message: 'PM2 live log stream connected successfully',
+      };
+      res.write(`data: ${JSON.stringify(initialEvent)}\n\n`);
+
+      const timer = setInterval(() => {
+        const pingEvent = {
+          timestamp: new Date().toISOString(),
+          process: url.searchParams.get('process') || 'pmmanager-web',
+          type: 'stdout',
+          message: `Periodic metric heartbeat at ${new Date().toISOString()}`,
+        };
+        try {
+          res.write(`data: ${JSON.stringify(pingEvent)}\n\n`);
+        } catch {
+          clearInterval(timer);
+        }
+      }, 3000);
+
+      req.on('close', () => {
+        clearInterval(timer);
+        res.end();
+      });
+      return;
+    }
+
+    // Historical Vitals API
+    if (pathname === '/api/vitals/history') {
+      const hours = parseInt(url.searchParams.get('hours') || '24', 10);
+      const proc = url.searchParams.get('process') || 'pmmanager-web';
+      const now = Date.now();
+      const vitals = [
+        {
+          id: 1,
+          processId: '0',
+          processName: proc,
+          cpu: 2.1,
+          memory: 45000000,
+          timestamp: new Date(now - 600000).toISOString(),
+        },
+        {
+          id: 2,
+          processId: '0',
+          processName: proc,
+          cpu: 3.5,
+          memory: 46200000,
+          timestamp: new Date(now - 300000).toISOString(),
+        },
+        {
+          id: 3,
+          processId: '0',
+          processName: proc,
+          cpu: 1.8,
+          memory: 44800000,
+          timestamp: new Date(now).toISOString(),
+        },
+      ];
+      return this.sendJson(res, 200, {
+        success: true,
+        process: proc,
+        hours,
+        data: vitals,
+      });
+    }
+
+    // Fail2Ban Security Shield Status
+    if (pathname === '/api/fail2ban') {
+      return this.sendJson(res, 200, {
+        success: true,
+        mode: 'mock',
+        jails: [
+          {
+            name: 'sshd',
+            currentlyFailed: 3,
+            totalFailed: 18,
+            currentlyBanned: this.fail2banBanned.filter((b) => b.jail === 'sshd').length,
+            totalBanned: 6,
+            bannedIPs: this.fail2banBanned.filter((b) => b.jail === 'sshd').map((b) => b.ip),
+          },
+          {
+            name: 'nginx-http-auth',
+            currentlyFailed: 1,
+            totalFailed: 8,
+            currentlyBanned: this.fail2banBanned.filter((b) => b.jail === 'nginx-http-auth').length,
+            totalBanned: 3,
+            bannedIPs: this.fail2banBanned.filter((b) => b.jail === 'nginx-http-auth').map((b) => b.ip),
+          },
+        ],
+        bannedList: this.fail2banBanned,
+      });
+    }
+
+    // Fail2Ban Unban Action (Admin only)
+    if (pathname === '/api/fail2ban/unban') {
+      if (req.method !== 'POST') {
+        return this.sendJson(res, 405, { error: 'Method not allowed' });
+      }
+      const body = await this.readBody(req);
+      if (!body.jail || !body.ip) {
+        return this.sendJson(res, 400, { error: 'Missing jail or ip parameter' });
+      }
+      const strIp = String(body.ip);
+      if (/[;&|`$]/.test(strIp)) {
+        return this.sendJson(res, 400, { error: 'Invalid IP address. Malformed characters detected' });
+      }
+      this.fail2banBanned = this.fail2banBanned.filter((b) => b.ip !== strIp);
+      return this.sendJson(res, 200, {
+        success: true,
+        mode: 'mock',
+        message: `IP ${strIp} unbanned from jail ${body.jail}`,
+      });
+    }
+
+    // Uptime Monitoring API
+    if (pathname === '/api/uptime') {
+      if (req.method === 'GET') {
+        return this.sendJson(res, 200, {
+          success: true,
+          monitors: this.uptimeMonitors,
+        });
+      }
+
+      if (req.method === 'POST') {
+        const body = await this.readBody(req);
+        if (!body.name || typeof body.name !== 'string' || body.name.trim() === '') {
+          return this.sendJson(res, 400, { error: 'Monitor name is required' });
+        }
+        if (!body.url || typeof body.url !== 'string' || !body.url.startsWith('http')) {
+          return this.sendJson(res, 400, { error: 'Valid HTTP/HTTPS URL is required' });
+        }
+        if (body.intervalSeconds !== undefined && Number(body.intervalSeconds) <= 0) {
+          return this.sendJson(res, 400, { error: 'Interval must be greater than zero' });
+        }
+        const newMonitor = {
+          id: Date.now(),
+          name: body.name.trim(),
+          url: body.url.trim(),
+          intervalSeconds: Number(body.intervalSeconds) || 300,
+          createdAt: new Date().toISOString(),
+          uptimePercentage: 100.0,
+          avgResponseTimeMs: 45.0,
+          lastStatus: 'UP' as const,
+        };
+        this.uptimeMonitors.push(newMonitor);
+        return this.sendJson(res, 201, { success: true, monitor: newMonitor });
+      }
+
+      if (req.method === 'DELETE') {
+        const idParam = url.searchParams.get('id');
+        const body = await this.readBody(req);
+        const id = Number(idParam || body?.id);
+        if (!id) {
+          return this.sendJson(res, 400, { error: 'Missing monitor ID' });
+        }
+        this.uptimeMonitors = this.uptimeMonitors.filter((m) => m.id !== id);
+        return this.sendJson(res, 200, { success: true, message: 'Monitor deleted successfully' });
+      }
+
+      return this.sendJson(res, 405, { error: 'Method not allowed' });
+    }
+
+    // Uptime Check Trigger
+    if (pathname === '/api/uptime/check') {
+      const idParam = url.searchParams.get('id');
+      const body = await this.readBody(req);
+      const id = Number(idParam || body?.id || 1);
+      return this.sendJson(res, 200, {
+        success: true,
+        check: {
+          id: Date.now(),
+          monitorId: id,
+          statusCode: 200,
+          responseTimeMs: 38.4,
+          status: 'UP',
+          error: null,
+          timestamp: new Date().toISOString(),
+        },
+      });
     }
 
     // PM2 List

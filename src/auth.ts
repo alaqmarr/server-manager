@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { authConfig } from "./auth.config";
-import { getAdminByUsername } from "./lib/db";
+import { getUserByUsername } from "./lib/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -32,7 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const user = getAdminByUsername(username);
+        const user = getUserByUsername(username);
         if (!user) {
           return null;
         }
@@ -42,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return {
             id: user.id.toString(),
             name: user.username,
-            role: user.role,
+            role: user.role || "admin",
           };
         }
 
@@ -59,9 +59,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token.name && session.user) {
         session.user.name = token.name;
       }
-      if (token.role && session.user) {
+      if (session.user) {
         (session.user as { id?: string; name?: string | null; email?: string | null; role?: string }).role =
-          token.role as string;
+          (token.role as string) || "admin";
       }
       return session;
     },
@@ -69,7 +69,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.sub = user.id;
         token.name = user.name;
-        token.role = (user as { role?: string }).role;
+        token.role = (user as { role?: string }).role || "admin";
       }
       return token;
     },

@@ -12,6 +12,7 @@ import {
   Database,
   Layers,
   FileCode,
+  Terminal,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -22,6 +23,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import LogStreamer from "./LogStreamer";
 
 export interface PM2Process {
   id: number | string;
@@ -75,6 +77,7 @@ export default function PM2Manager() {
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
   const [scripts, setScripts] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<{title: string, message: string, type: 'error' | 'success'} | null>(null);
+  const [selectedLogProcess, setSelectedLogProcess] = useState<string>("all");
 
   const fetchProcesses = async () => {
     try {
@@ -382,6 +385,16 @@ export default function PM2Manager() {
                           >
                             <RotateCw className={`w-4 h-4 ${actionLoading[restartKey] ? "animate-spin" : ""}`} />
                           </button>
+                          <button
+                            onClick={() => {
+                              setSelectedLogProcess(proc.name);
+                              document.getElementById("log-streamer-section")?.scrollIntoView({ behavior: "smooth" });
+                            }}
+                            className="w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center transition-colors"
+                            title={`View live logs for ${proc.name}`}
+                          >
+                            <Terminal className="w-4 h-4" />
+                          </button>
                           {linkedScripts.map((s: any) => (
                              <button
                                key={s.id}
@@ -402,6 +415,11 @@ export default function PM2Manager() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* Real-Time SSE Log Streamer Console */}
+      <div className="mt-8" id="log-streamer-section">
+        <LogStreamer processes={processes} initialProcess={selectedLogProcess} key={selectedLogProcess} />
       </div>
 
       {feedback && (

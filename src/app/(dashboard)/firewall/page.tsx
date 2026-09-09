@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Shield, ShieldAlert, ShieldCheck, Plus, Trash2, Power, PowerOff } from "lucide-react";
+import Fail2BanManager from "@/components/Fail2BanManager";
 
 export default function FirewallPage() {
   const [active, setActive] = useState(false);
@@ -157,6 +158,10 @@ export default function FirewallPage() {
             </pre>
           </div>
         </div>
+      </div>
+
+      <div className="pt-6 border-t border-white/5">
+        <Fail2BanManager />
       </div>
     </div>
   );

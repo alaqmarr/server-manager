@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-guard";
 import { createNginxConfig } from "@/lib/nginx-service";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const authResult = await requireAdmin(req);
+    if (authResult.error) {
+      return authResult.error;
+    }
 
     const body = await req.json();
     if (!body.name || !body.template || !body.domain || !body.portOrPath) {
@@ -14,7 +18,11 @@ export async function POST(req: Request) {
 
     const data = await createNginxConfig(body.name, body.template, body.domain, body.portOrPath);
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: err.statusCode || 500 });
+  } catch (err: unknown) {
+    const error = err as { message?: string; statusCode?: number };
+    return NextResponse.json(
+      { error: error?.message || "Internal server error" },
+      { status: error?.statusCode || 500 }
+    );
   }
 }

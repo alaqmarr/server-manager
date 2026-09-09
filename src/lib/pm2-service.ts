@@ -44,6 +44,17 @@ export interface PM2ActionResponse {
 const INITIAL_MOCK_PROCESSES: PM2Process[] = [
   {
     id: 0,
+    name: "pmmanager-web",
+    pid: 10420,
+    status: "online",
+    mode: "fork",
+    cpu: 2.1,
+    memory: 45 * 1024 * 1024,
+    uptime: Date.now() - 18000000,
+    restarts: 0,
+  },
+  {
+    id: 1,
     name: "web-app",
     pid: 10421,
     status: "online",
@@ -54,7 +65,7 @@ const INITIAL_MOCK_PROCESSES: PM2Process[] = [
     restarts: 0,
   },
   {
-    id: 1,
+    id: 2,
     name: "api-server",
     pid: 10422,
     status: "online",
@@ -65,7 +76,7 @@ const INITIAL_MOCK_PROCESSES: PM2Process[] = [
     restarts: 1,
   },
   {
-    id: 2,
+    id: 3,
     name: "worker",
     pid: 0,
     status: "stopped",
@@ -220,7 +231,7 @@ export async function getPM2Processes(): Promise<PM2ListResponse> {
   const mockProcs = getMockProcesses();
   const processes = applyMetricJitter(mockProcs).map(p => ({
     ...p,
-    ports: activePortsMap.get(p.pid) || (p.pid === 10421 ? [3000] : p.pid === 10422 ? [8000] : []) // Mock port fallback
+    ports: activePortsMap.get(p.pid) || (p.pid === 10420 ? [3000] : p.pid === 10421 ? [3001] : p.pid === 10422 ? [8000] : []) // Mock port fallback
   }));
   const summary = calculatePM2Summary(processes);
 

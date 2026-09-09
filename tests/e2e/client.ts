@@ -256,4 +256,195 @@ export class TestClient {
   public async setupAdmin(username: string, password: string): Promise<{ status: number; ok: boolean; data: any }> {
     return this.post('/api/setup', { username, password });
   }
+
+  /**
+   * Helper to perform DELETE with optional JSON payload
+   */
+  public async delete<T = any>(
+    path: string,
+    body?: any,
+    options: RequestInit = {}
+  ): Promise<{ status: number; ok: boolean; data: T; response: Response }> {
+    const headers = new Headers(options.headers || {});
+    let bodyContent: BodyInit | undefined = undefined;
+
+    if (body !== undefined && body !== null) {
+      if (typeof body === 'string') {
+        bodyContent = body;
+      } else {
+        if (!headers.has('content-type')) {
+          headers.set('content-type', 'application/json');
+        }
+        bodyContent = JSON.stringify(body);
+      }
+    }
+
+    const res = await this.fetch(path, {
+      ...options,
+      method: 'DELETE',
+      headers,
+      body: bodyContent,
+    });
+
+    const text = await res.text();
+    let data: any = text;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      // return as text
+    }
+
+    return { status: res.status, ok: res.ok, data, response: res };
+  }
+
+  /**
+   * Ensure a developer user exists in SQLite database (if accessible directly)
+   */
+  public async ensureDeveloperUser(username = 'developer', password = 'password123'): Promise<boolean> {
+    try {
+      const Database = (await import('better-sqlite3')).default;
+      const bcrypt = await import('bcrypt');
+      const path = await import('path');
+      const fs = await import('fs');
+      const dbPath = path.join(process.cwd(), 'data.db');
+      if (fs.existsSync(dbPath)) {
+        const db = new Database(dbPath);
+        const existing = db.prepare('SELECT id, role FROM users WHERE username = ? COLLATE NOCASE').get(username) as any;
+        if (!existing) {
+          const hash = bcrypt.hashSync(password, 10);
+          db.prepare("INSERT INTO users (username, passwordHash, role) VALUES (?, ?, 'developer')").run(username, hash);
+        } else if (existing.role !== 'developer') {
+          db.prepare("UPDATE users SET role = 'developer' WHERE id = ?").run(existing.id);
+        }
+        db.close();
+        return true;
+      }
+    } catch {
+      // In-process mock or restricted DB access fallback
+    }
+    return false;
+  }
+
+  /**
+   * Create an authenticated Developer client
+   */
+  public async createDeveloperClient(username = 'developer', password = 'password123'): Promise<TestClient> {
+    await this.ensureDeveloperUser(username, password);
+    const devClient = this.createAnonymousClient();
+    await devClient.login(username, password);
+    return devClient;
+  }
+
+  /**
+   * Connect to Server-Sent Events (SSE) endpoint and receive parsed log events
+   */
+  public async connectSse(
+    path: string,
+    options: { timeoutMs?: number; signal?: AbortSignal } = {}
+  ): Promise<{ firstEvent: any; events: any[]; status: number; headers: Headers; abort: () => void }> {
+    const timeoutMs = options.timeoutMs ?? 10000;
+    const controller = new AbortController();
+    const abort = () => {
+      try {
+        controller.abort();
+      } catch {}
+    };
+
+    const timeoutId = setTimeout(() => {
+      abort();
+    }, timeoutMs);
+
+    const url = path.startsWith('http://') || path.startsWith('https://')
+      ? path
+      : `${this.baseUrl}${path.startsWith('/') ? path : '/' + path}`;
+
+    const headers = new Headers();
+    headers.set('accept', 'text/event-stream');
+    const cookieStr = this.getCookieHeader();
+    if (cookieStr) {
+      headers.set('cookie', cookieStr);
+    }
+
+    const events: any[] = [];
+
+    try {
+      const res = await fetch(url, {
+        headers,
+        signal: controller.signal,
+      });
+
+      if (!res.ok || !res.body) {
+        clearTimeout(timeoutId);
+        return {
+          firstEvent: null,
+          events: [],
+          status: res.status,
+          headers: res.headers,
+          abort,
+        };
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() || '';
+
+        for (const block of parts) {
+          const lines = block.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const rawData = line.substring(5).trim();
+              let parsed: any = rawData;
+              try {
+                parsed = JSON.parse(rawData);
+              } catch {
+                // leave as string
+              }
+              events.push(parsed);
+              if (events.length >= 1) {
+                clearTimeout(timeoutId);
+                abort();
+                return {
+                  firstEvent: events[0],
+                  events,
+                  status: res.status,
+                  headers: res.headers,
+                  abort,
+                };
+              }
+            }
+          }
+        }
+      }
+
+      clearTimeout(timeoutId);
+      return {
+        firstEvent: events[0] || null,
+        events,
+        status: res.status,
+        headers: res.headers,
+        abort,
+      };
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (events.length > 0) {
+        return {
+          firstEvent: events[0],
+          events,
+          status: 200,
+          headers: new Headers(),
+          abort,
+        };
+      }
+      throw err;
+    }
+  }
 }
+

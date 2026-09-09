@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-guard";
 import { exec, type ExecException } from "child_process";
 import fs from "fs";
 import path from "path";
@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const authResult = await requireAdmin(req);
+    if (authResult.error) {
+      return authResult.error;
     }
 
     let body: { command?: unknown; cwd?: unknown } | null = null;
