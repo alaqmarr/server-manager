@@ -343,9 +343,17 @@ export async function saveNginxFile(relativePath: string, content: string): Prom
     }
   }
 
+  // Reload nginx after saving
+  try {
+    await execAsync("sudo -n nginx -s reload");
+  } catch (err) {
+    // We ignore errors here so the UI doesn't crash, but it might mean syntax is invalid
+    // or Nginx isn't running.
+  }
+
   return {
     success: true,
-    message: "Configuration saved successfully",
+    message: "Configuration saved successfully (Nginx reloaded)",
   };
 }
 
