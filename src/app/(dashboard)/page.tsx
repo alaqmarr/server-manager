@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const uptimeHours = (stats.uptime / 3600).toFixed(1);
 
   return (
-    <div className="p-8 w-full space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="p-4 md:p-8 w-full space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="relative pb-6 border-b border-white/5">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-[100px] -z-10" />
         <h1 className="text-4xl font-extrabold text-white tracking-tight text-glow">

@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default function PM2Page() {
   return (
-    <div className="p-8 w-full space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
+    <div className="p-4 md:p-8 w-full space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
       <div className="absolute top-0 left-0 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
       
       <div className="pb-6 border-b border-white/5">

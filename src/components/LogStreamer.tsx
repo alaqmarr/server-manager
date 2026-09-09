@@ -52,8 +52,8 @@ export default function LogStreamer({
 
   // Auto-scroll handler
   useEffect(() => {
-    if (autoScroll && !isPaused && logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (autoScroll && !isPaused && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
   }, [logs, autoScroll, isPaused]);
 
