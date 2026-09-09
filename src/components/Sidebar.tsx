@@ -20,7 +20,8 @@ import {
   FileText,
   Shield,
   FileKey,
-  Database
+  Database,
+  LayoutGrid
 } from "lucide-react";
 
 export function Sidebar({ userName }: { userName: string }) {
@@ -33,7 +34,8 @@ export function Sidebar({ userName }: { userName: string }) {
   { name: "Nginx Manager", href: "/nginx", icon: Globe },
   { name: "PM2 Manager", href: "/pm2", icon: Server },
   { name: "Port Mappings", href: "/ports", icon: Network },
-    { name: "Task Runner", href: "/scripts", icon: FileCode },
+  { name: "Port Visualizer", href: "/port-visualizer", icon: LayoutGrid },
+  { name: "Task Runner", href: "/scripts", icon: FileCode },
   { name: "Cron Jobs", href: "/cron", icon: Clock },
   { name: "Firewall", href: "/firewall", icon: Shield },
   { name: "Environment Vars", href: "/env", icon: FileKey },
