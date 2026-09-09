@@ -279,6 +279,22 @@ export async function executePM2Action(
     };
   }
 
+  // Handle self-restarting gracefully so the API connection isn't severed instantly
+  const isSelf = process.env.name === strId || strId === "server-manager" || strId === "pmmanager";
+  if (action === "restart" && isSelf) {
+    setTimeout(() => {
+      execFile("pm2", ["restart", strId], { shell: process.platform === "win32" }, (error) => {
+        if (error) console.error(`[PM2 CLI] Failed to self-restart: ${error.message}`);
+      });
+    }, 1500); // 1.5s delay to allow the HTTP response to be fully sent
+    
+    return {
+      success: true,
+      mode: "real",
+      message: `Self-restart initiated. The dashboard will be back online in a few seconds.`,
+    };
+  }
+
   // Attempt host CLI execution
   let cliExecuted = false;
   let cliError = "";
