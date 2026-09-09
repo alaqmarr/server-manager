@@ -1,9 +1,375 @@
-﻿浩潰瑲笠攠數䙣汩⁥⁽牦浯∠档汩彤牰捯獥≳਻浩潰瑲笠瀠潲業楳祦素映潲⁭產楴≬਻浩潰瑲笠朠瑥捁楴敶潐瑲⁳⁽牦浯∠⼮潰瑲⵳敳癲捩≥਻挊湯瑳攠數䙣汩䅥祳据㴠瀠潲業楳祦攨數䙣汩⥥਻攊灸牯⁴湩整晲捡⁥䵐倲潲散獳笠 椠㩤渠浵敢⁲⁼瑳楲杮਻†慮敭›瑳楲杮਻†楰㩤渠浵敢㭲 猠慴畴㩳∠湯楬敮•⁼猢潴灰摥•⁼攢牲牯摥㬢 洠摯㩥∠潦歲•⁼挢畬瑳牥㬢 挠異›畮扭牥※⼯瀠牥散瑮条੥†敭潭祲›畮扭牥※⼯戠瑹獥 甠瑰浩㩥渠浵敢㭲⼠ 楴敭瑳浡ੰ†敲瑳牡獴›畮扭牥਻†潰瑲㽳›畮扭牥嵛਻੽攊灸牯⁴湩整晲捡⁥䵐匲浵慭祲笠 琠瑯污›畮扭牥਻†湯楬敮›畮扭牥਻†瑳灯数㩤渠浵敢㭲 琠瑯污敍潭祲祂整㩳渠浵敢㭲 愠杶灃偵牥散瑮›畮扭牥਻੽攊灸牯⁴湩整晲捡⁥䵐䰲獩剴獥潰獮⁥੻†畳捣獥㩳戠潯敬湡਻†潭敤›爢慥≬簠∠潭正㬢 琠浩獥慴灭›畮扭牥਻†畳浭牡㩹倠㉍畓浭牡㭹 瀠潲散獳獥›䵐倲潲散獳嵛਻੽攊灸牯⁴湩整晲捡⁥䵐䄲瑣潩剮獥潰獮⁥੻†畳捣獥㩳戠潯敬湡਻†潭敤›爢慥≬簠∠潭正㬢 洠獥慳敧›瑳楲杮਻†牥潲㽲›瑳楲杮਻†瑳瑡獵潃敤㨿渠浵敢㭲紊ਊ潣獮⁴义呉䅉彌位䭃偟佒䕃卓卅›䵐倲潲散獳嵛㴠嬠 笠 †椠㩤〠ਬ††慮敭›瀢浭湡条牥眭扥Ⱒ †瀠摩›〱㈴ⰰ †猠慴畴㩳∠湯楬敮Ⱒ †洠摯㩥∠潦歲Ⱒ †挠異›⸲ⰱ †洠浥牯㩹㐠‵‪〱㐲⨠ㄠ㈰ⰴ †甠瑰浩㩥䐠瑡⹥潮⡷ ‭㠱〰〰〰ਬ††敲瑳牡獴›ⰰ 素ਬ†੻††摩›ⰱ †渠浡㩥∠敷ⵢ灡≰ਬ††楰㩤ㄠ㐰ㄲਬ††瑳瑡獵›漢汮湩≥ਬ††潭敤›挢畬瑳牥Ⱒ †挠異›⸲ⰱ †洠浥牯㩹㐠‸‪〱㐲⨠ㄠ㈰ⰴ †甠瑰浩㩥䐠瑡⹥潮⡷ ‭㐱〴〰〰‬⼯㐠栠畯獲愠潧 †爠獥慴瑲㩳〠ਬ†ⱽ 笠 †椠㩤㈠ਬ††慮敭›愢楰猭牥敶≲ਬ††楰㩤ㄠ㐰㈲ਬ††瑳瑡獵›漢汮湩≥ਬ††潭敤›昢牯≫ਬ††灣㩵ㄠ㐮ਬ††敭潭祲›㐶⨠ㄠ㈰‴‪〱㐲ਬ††灵楴敭›慄整渮睯⤨ⴠ㜠〲〰〰‬⼯㈠栠畯獲愠潧 †爠獥慴瑲㩳ㄠਬ†ⱽ 笠 †椠㩤㌠ਬ††慮敭›眢牯敫≲ਬ††楰㩤〠ਬ††瑳瑡獵›猢潴灰摥Ⱒ †洠摯㩥∠潦歲Ⱒ †挠異›ⰰ †洠浥牯㩹〠ਬ††灵楴敭›ⰰ †爠獥慴瑲㩳㌠ਬ†ⱽ崊਻搊捥慬敲朠潬慢⁬੻†慶⁲彟浰䴲捯偫潲散獳獥›䵐倲潲散獳嵛簠甠摮晥湩摥਻੽⼊⨪ ‪敒牴敩敶⁳桴⁥数獲獩整瑮椠⵮敭潭祲洠捯⁫䵐′牰捯獥敳⹳ ⼪攊灸牯⁴畦据楴湯朠瑥潍正牐捯獥敳⡳㨩倠㉍牐捯獥孳⁝੻†晩⠠朡潬慢呬楨⹳彟浰䴲捯偫潲散獳獥 ੻††汧扯污桔獩弮灟㉭潍正牐捯獥敳⁳‽义呉䅉彌位䭃偟佒䕃卓卅洮灡⠨⥰㴠‾笨⸠⸮⁰⥽㬩 素 爠瑥牵⁮汧扯污桔獩弮灟㉭潍正牐捯獥敳㭳紊ਊ⨯ਪ⨠䌠污畣慬整⁳畳浭牡⁹敭牴捩⁳捡潲獳瀠潲散獳獥ਮ⨠ਯ硥潰瑲映湵瑣潩⁮慣捬汵瑡健㉍畓浭牡⡹牰捯獥敳㩳倠㉍牐捯獥孳⥝›䵐匲浵慭祲笠 挠湯瑳琠瑯污㴠瀠潲散獳獥氮湥瑧㭨 挠湯瑳漠汮湩⁥‽牰捯獥敳⹳楦瑬牥⠨⥰㴠‾⹰瑳瑡獵㴠㴽∠湯楬敮⤢氮湥瑧㭨 挠湯瑳猠潴灰摥㴠瀠潲散獳獥昮汩整⡲瀨 㸽瀠献慴畴⁳㴽‽猢潴灰摥⤢氮湥瑧㭨 挠湯瑳琠瑯污敍潭祲祂整⁳‽牰捯獥敳⹳敲畤散⠨捡Ᵽ瀠 㸽愠捣⬠⠠⹰敭潭祲簠⁼⤰‬⤰਻†潣獮⁴癡䍧異敐捲湥⁴਽††潴慴⁬‾ਰ†††‿畎扭牥⠨牰捯獥敳⹳敲畤散⠨捡Ᵽ瀠 㸽愠捣⬠⠠⹰灣⁵籼〠Ⱙ〠  潴慴⥬琮䙯硩摥ㄨ⤩ ††㨠〠਻ 爠瑥牵⁮੻††潴慴ⱬ †漠汮湩ⱥ †猠潴灰摥ਬ††潴慴䵬浥牯䉹瑹獥ਬ††癡䍧異敐捲湥ⱴ 素਻੽⼊⨪ ‪灁汰敩⁳敲污獩楴⁣敭牴捩樠瑩整⁲潴洠捯⁫牰捯獥敳㩳 ‪偃㩕술ㆱ㔮Ⱕ䴠浥牯㩹술㊱䉍ਮ⨠䘠牯猠潴灰摥瀠潲散獳獥‬偃⁕獩猠牴捩汴⁹⸰ ⼪昊湵瑣潩⁮灡汰䵹瑥楲䩣瑩整⡲牰捯㩳倠㉍牐捯獥孳⥝›䵐倲潲散獳嵛笠 爠瑥牵⁮牰捯⹳慭⡰瀨潲⥣㴠‾੻††晩⠠牰捯献慴畴⁳㴽‽猢潴灰摥⤢笠 ††瀠潲⹣灣⁵‽㬰 ††爠瑥牵⁮⁻⸮瀮潲Ᵽ挠異›‰㭽 †素ਊ††⼯䌠啐樠瑩整㩲술ㆱ㔮ਥ††潣獮⁴灣䑵汥慴㴠䴠瑡⹨慲摮浯⤨⨠㌠〮ⴠㄠ㔮਻††敬⁴敮䍷異㴠丠浵敢⡲瀨潲⹣灣⁵‫灣䑵汥慴⸩潴楆數⡤⤱㬩 †椠⁦渨睥灃⁵‼⸰⤲渠睥灃⁵‽⸰㬵 †椠⁦渨睥灃⁵‾㔲〮 敮䍷異㴠丠浵敢⡲瀨潲⹣灣⁵‭⸱⤰琮䙯硩摥ㄨ⤩਻ †⼠ 敍潭祲樠瑩整㩲술㊱䉍 †挠湯瑳洠浥敄瑬⁡‽慍桴爮畯摮⠨慍桴爮湡潤⡭ ‪‴‭⤲⨠ㄠ㈰‴‪〱㐲㬩 †挠湯瑳戠獡䵥浥㴠瀠潲⹣敭潭祲㸠〠㼠瀠潲⹣敭潭祲㨠㌠′‪〱㐲⨠ㄠ㈰㬴 †挠湯瑳渠睥敍⁭‽慍桴洮硡ㄨ‶‪〱㐲⨠ㄠ㈰ⰴ戠獡䵥浥⬠洠浥敄瑬⥡਻ †瀠潲⹣灣⁵‽敮䍷異਻††牰捯洮浥牯⁹‽敮䵷浥਻ †爠瑥牵⁮੻†††⸮瀮潲Ᵽ ††挠異›敮䍷異ਬ†††敭潭祲›敮䵷浥ਬ††㭽 素㬩紊ਊ⨯ਪ⨠删瑥楲癥獥倠㉍瀠潲散獳獥眠瑩⁨畤污攠數畣楴湯攠杮湩㩥 ‪瑁整灭獴栠獯⁴䱃⁉灠㉭樠楬瑳Ⱡ愠摮映污獬戠捡⁫潴爠獥汩敩瑮洠捯⁫楷桴樠瑩整⹲ ⼪攊灸牯⁴獡湹⁣畦据楴湯朠瑥䵐倲潲散獳獥⤨›牐浯獩㱥䵐䰲獩剴獥潰獮㹥笠 ⼠ 牔⁹敦捴楨杮愠瑣癩⁥潰瑲⁳潣据牵敲瑮祬琠⁯慭⁰桴浥琠⁯䵐′牰捯獥敳ੳ†敬⁴捡楴敶潐瑲䵳灡㴠渠睥䴠灡渼浵敢Ⱳ渠浵敢孲㹝⤨਻†牴⁹੻††潣獮⁴潰瑲䑳瑡⁡‽睡楡⁴敧䅴瑣癩健牯獴⤨਻††晩⠠潰瑲䑳瑡⁡☦瀠牯獴慄慴瀮牯獴 ੻†††潦⁲挨湯瑳瀠漠⁦潰瑲䑳瑡⹡潰瑲⥳笠 †††椠⁦瀨瀮摩 ੻†††††潣獮⁴硥獩楴杮㴠愠瑣癩健牯獴慍⹰敧⡴⹰楰⥤簠⁼嵛਻†††††晩⠠攡楸瑳湩⹧湩汣摵獥瀨瀮牯⥴ ੻††††††硥獩楴杮瀮獵⡨⹰潰瑲㬩 ††††素 ††††愠瑣癩健牯獴慍⹰敳⡴⹰楰Ɽ攠楸瑳湩⥧਻††††੽†††੽††੽†⁽慣捴⁨攨牲 ੻††潣獮汯⹥慷湲∨慆汩摥琠⁯敦捴⁨潰瑲⁳潦⁲慭灰湩㩧Ⱒ攠牲㬩 素ਊ†⼯䄠瑴浥瑰栠獯⁴䱃⁉硥捥瑵潩੮†牴⁹੻††潣獮⁴⁻瑳潤瑵素㴠愠慷瑩攠數䙣汩䅥祳据∨浰∲‬≛汪獩≴ⱝ笠 ††琠浩潥瑵›〳〰ਬ†††桳汥㩬瀠潲散獳瀮慬晴牯⁭㴽‽眢湩㈳Ⱒ †素㬩ਊ††潣獮⁴慰獲摥㴠䨠体⹎慰獲⡥瑳潤瑵㬩 †椠⁦䄨牲祡椮䅳牲祡瀨牡敳⥤☠…慰獲摥氮湥瑧⁨‾⤰笠 ††挠湯瑳瀠潲散獳獥›䵐倲潲散獳嵛㴠瀠牡敳⹤慭⡰椨整㩭删捥牯㱤瑳楲杮‬湵湫睯㹮 㸽笠 †††挠湯瑳椠⁤‽椨整⹭浰楟⁤㼿椠整⹭慮敭㼠‿⤰愠⁳畮扭牥簠猠牴湩㭧 †††挠湯瑳渠浡⁥‽椨整⹭慮敭㼠‿灠潲散獳␭楻絤⥠愠⁳瑳楲杮਻††††潣獮⁴楰⁤‽祴数景椠整⹭楰⁤㴽‽渢浵敢≲㼠椠整⹭楰⁤›㬰 †††挠湯瑳瀠㉭湅⁶‽椨整⹭浰弲湥⁶㼿笠⥽愠⁳敒潣摲猼牴湩Ⱨ甠歮潮湷㬾 †††挠湯瑳洠湯瑩㴠⠠瑩浥洮湯瑩㼠‿絻 獡删捥牯㱤瑳楲杮‬湵湫睯㹮਻ †††氠瑥猠慴畴㩳∠湯楬敮•⁼猢潴灰摥•⁼攢牲牯摥•‽攢牲牯摥㬢 †††椠⁦瀨㉭湅⹶瑳瑡獵㴠㴽∠湯楬敮⤢猠慴畴⁳‽漢汮湩≥਻††††汥敳椠⁦瀨㉭湅⹶瑳瑡獵㴠㴽∠瑳灯数≤ 瑳瑡獵㴠∠瑳灯数≤਻ †††挠湯瑳洠摯⁥‽浰䔲癮攮數彣潭敤㴠㴽∠汣獵整彲潭敤•‿挢畬瑳牥•›昢牯≫਻††††潣獮⁴灣⁵‽祴数景洠湯瑩挮異㴠㴽∠畮扭牥•‿潭楮⹴灣⁵›㬰 †††挠湯瑳洠浥牯⁹‽祴数景洠湯瑩洮浥牯⁹㴽‽渢浵敢≲㼠洠湯瑩洮浥牯⁹›㬰 †††挠湯瑳甠瑰浩⁥‽祴数景瀠㉭湅⹶浰畟瑰浩⁥㴽‽渢浵敢≲㼠瀠㉭湅⹶浰畟瑰浩⁥›慄整渮睯⤨਻††††潣獮⁴敲瑳牡獴㴠琠灹潥⁦浰䔲癮爮獥慴瑲瑟浩⁥㴽‽渢浵敢≲㼠瀠㉭湅⹶敲瑳牡彴楴敭㨠〠਻†††† †††⼠ 慍捴⁨潰瑲⁳祢倠䑉 †††挠湯瑳瀠牯獴㴠愠瑣癩健牯獴慍⹰敧⡴楰⥤簠⁼嵛਻ †††爠瑥牵⁮⁻摩‬慮敭‬楰Ɽ猠慴畴ⱳ洠摯ⱥ挠異‬敭潭祲‬灵楴敭‬敲瑳牡獴‬潰瑲⁳㭽 ††素㬩ਊ†††潣獮⁴畳浭牡⁹‽慣捬汵瑡健㉍畓浭牡⡹牰捯獥敳⥳਻†††敲畴湲笠 †††猠捵散獳›牴敵ਬ††††潭敤›爢慥≬ਬ††††楴敭瑳浡㩰䐠瑡⹥潮⡷Ⱙ †††猠浵慭祲ਬ††††牰捯獥敳ⱳ ††素਻††੽†⁽慣捴⁨੻††⼯倠㉍䌠䥌愠獢湥⁴牯甠慮慶汩扡敬ⴠ‾獵⁥敲楳楬湥⁴潭正映污扬捡੫†੽ ⼠ 敒楳楬湥⁴潍正䘠污扬捡੫†潣獮⁴潭正牐捯⁳‽敧䵴捯偫潲散獳獥⤨਻†潣獮⁴牰捯獥敳⁳‽灡汰䵹瑥楲䩣瑩整⡲潭正牐捯⥳洮灡瀨㴠‾笨 †⸠⸮Ɒ †瀠牯獴›捡楴敶潐瑲䵳灡朮瑥瀨瀮摩 籼⠠⹰楰⁤㴽‽〱㈴‰‿㍛〰崰㨠瀠瀮摩㴠㴽ㄠ㐰ㄲ㼠嬠〳㄰⁝›⹰楰⁤㴽‽〱㈴′‿㡛〰崰㨠嬠⥝⼠ 潍正瀠牯⁴慦汬慢正 素⤩਻†潣獮⁴畳浭牡⁹‽慣捬汵瑡健㉍畓浭牡⡹牰捯獥敳⥳਻ 爠瑥牵⁮੻††畳捣獥㩳琠畲ⱥ †洠摯㩥∠潭正Ⱒ †琠浩獥慴灭›慄整渮睯⤨ਬ††畳浭牡ⱹ †瀠潲散獳獥ਬ†㭽紊ਊ⨯ਪ⨠吠楲杧牥⁳瑳牡ⱴ猠潴Ɒ漠⁲敲瑳牡⁴捡楴湯映牯愠倠㉍瀠潲散獳ਮ⨠嘠污摩瑡獥椠灮瑵ⱳ攠數畣整⁳潨瑳䌠䥌‬湡⁤畭慴整⁳牰捯獥⁳瑳瑡⹥ ⼪攊灸牯⁴獡湹⁣畦据楴湯攠數畣整䵐䄲瑣潩⡮ 愠瑣潩㩮甠歮潮湷ਬ†摩›湵湫睯੮㨩倠潲業敳值㉍捁楴湯敒灳湯敳‾੻†⼯嘠污摩瑡⁥捡楴湯 椠⁦ਨ††祴数景愠瑣潩⁮㴡‽猢牴湩≧簠੼††嬡猢慴瑲Ⱒ∠瑳灯Ⱒ∠敲瑳牡≴‬昢畬桳崢椮据畬敤⡳捡楴湯਩† ੻††敲畴湲笠 ††猠捵散獳›慦獬ⱥ ††洠摯㩥∠潭正Ⱒ ††洠獥慳敧›䤢癮污摩愠瑣潩⹮䴠獵⁴敢✠瑳牡❴‬猧潴❰‬爧獥慴瑲Ⱗ漠⁲昧畬桳∧ਬ†††牥潲㩲∠湉慶楬⁤捡楴湯‮畍瑳戠⁥猧慴瑲Ⱗ✠瑳灯Ⱗ✠敲瑳牡❴‬牯✠汦獵❨Ⱒ ††猠慴畴䍳摯㩥㐠〰ਬ††㭽 素ਊ†⼯嘠污摩瑡⁥䑉 椠⁦椨⁤㴽‽湵敤楦敮⁤籼椠⁤㴽‽畮汬簠⁼瑓楲杮椨⥤琮楲⡭ 㴽‽∢ ੻††敲畴湲笠 ††猠捵散獳›慦獬ⱥ ††洠摯㩥∠潭正Ⱒ ††洠獥慳敧›䴢獩楳杮瀠潲散獳䤠≄ਬ†††牥潲㩲∠楍獳湩⁧牰捯獥⁳䑉Ⱒ ††猠慴畴䍳摯㩥㐠〰ਬ††㭽 素ਊ†潣獮⁴瑳䥲⁤‽瑓楲杮椨⥤琮楲⡭㬩ਊ†⼯匠湡瑩穩⁥条楡獮⁴湩敪瑣潩㩮愠灬慨畮敭楲Ᵽ甠摮牥捳牯ⱥ栠灹敨Ɱ愠摮搠瑯漠汮੹†晩⠠⼡孞ⵡ䅺娭ⴰ弹ⵜ⹜⭝⼤琮獥⡴瑳䥲⥤ ੻††敲畴湲笠 ††猠捵散獳›慦獬ⱥ ††洠摯㩥∠潭正Ⱒ ††洠獥慳敧›䤢癮污摩瀠潲散獳䤠⹄䄠灬慨畮敭楲⁣湯祬Ⱒ ††攠牲牯›䤢癮污摩瀠潲散獳䤠⹄䄠灬慨畮敭楲⁣湯祬Ⱒ ††猠慴畴䍳摯㩥㐠〰ਬ††㭽 素ਊ†⼯䠠湡汤⁥敳晬爭獥慴瑲湩⁧牧捡晥汵祬猠⁯桴⁥偁⁉潣湮捥楴湯椠湳琧猠癥牥摥椠獮慴瑮祬 挠湯瑳椠即汥⁦‽牰捯獥⹳湥⹶慮敭㴠㴽猠牴摉簠⁼瑳䥲⁤㴽‽猢牥敶⵲慭慮敧≲簠⁼瑳䥲⁤㴽‽瀢浭湡条牥㬢 椠⁦愨瑣潩⁮㴽‽爢獥慴瑲•☦椠即汥⥦笠 †猠瑥楔敭畯⡴⤨㴠‾੻†††硥捥楆敬∨浰∲‬≛敲瑳牡≴‬瑳䥲嵤‬⁻桳汥㩬瀠潲散獳瀮慬晴牯⁭㴽‽眢湩㈳•ⱽ⠠牥潲⥲㴠‾੻††††晩⠠牥潲⥲挠湯潳敬攮牲牯怨偛㉍䌠䥌⁝慆汩摥琠⁯敳晬爭獥慴瑲›笤牥潲⹲敭獳条絥⥠਻†††⥽਻††ⱽㄠ〵⤰※⼯ㄠ㔮⁳敤慬⁹潴愠汬睯琠敨䠠呔⁐敲灳湯敳琠⁯敢映汵祬猠湥ੴ†† †爠瑥牵⁮੻†††畳捣獥㩳琠畲ⱥ ††洠摯㩥∠敲污Ⱒ ††洠獥慳敧›占汥ⵦ敲瑳牡⁴湩瑩慩整⹤吠敨搠獡扨慯摲眠汩⁬敢戠捡⁫湯楬敮椠⁮⁡敦⁷敳潣摮⹳Ⱡ †素਻†੽ ⼠ 瑁整灭⁴潨瑳䌠䥌攠數畣楴湯 氠瑥挠楬硅捥瑵摥㴠映污敳਻†敬⁴汣䕩牲牯㴠∠㬢 琠祲笠 †愠慷瑩攠數䙣汩䅥祳据∨浰∲‬慛瑣潩Ɱ猠牴摉ⱝ笠 ††琠浩潥瑵›㔱〰ⰰ ††猠敨汬›牰捯獥⹳汰瑡潦浲㴠㴽∠楷㍮∲ਬ††⥽਻††汣䕩數畣整⁤‽牴敵਻†⁽慣捴⁨攨牲›湵湫睯⥮笠 †挠湯瑳攠牲牯獍⁧‽牥⁲湩瑳湡散景䔠牲牯㼠攠牲洮獥慳敧㨠匠牴湩⡧牥⥲਻††汣䕩牲牯㴠攠牲牯獍㭧 †挠湯潳敬氮杯怨偛㉍䌠䥌⁝硥捥楆敬瀠㉭␠慻瑣潩絮␠獻牴摉⁽瑡整灭㩴␠敻牲牯獍絧⥠਻†੽ ⼠ 畍慴整洠捯⁫牰捯獥⁳瑳瑡੥†潣獮⁴潭正牐捯⁳‽敧䵴捯偫潲散獳獥⤨਻†潣獮⁴牰捯㴠洠捯偫潲獣昮湩⡤ †⠠⥰㴠‾瑓楲杮瀨椮⥤㴠㴽猠牴摉簠⁼⹰慮敭㴠㴽猠牴摉 ⤠਻ ⼠ 晉栠獯⁴䱃⁉慦汩摥愠摮瀠潲散獳搠敯⁳潮⁴硥獩⁴湩洠捯⁫瑳牯⁥㸭㐠㐰漠⁲〵ਰ†晩⠠挡楬硅捥瑵摥☠…瀡潲⥣笠 †爠瑥牵⁮੻†††畳捣獥㩳映污敳ਬ†††潭敤›洢捯≫ਬ†††敭獳条㩥怠牐捯獥⁳笤瑳䥲絤映楡敬⁤潴␠慻瑣潩絮›笤汣䕩牲牯恽ਬ†††牥潲㩲怠牐捯獥⁳笤瑳䥲絤映楡敬⁤潴␠慻瑣潩絮›笤汣䕩牲牯恽ਬ†††瑳瑡獵潃敤›〵ⰰ †素਻†੽ 椠⁦瀨潲⥣笠 †椠⁦愨瑣潩⁮㴽‽猢潴≰ ੻†††牰捯献慴畴⁳‽猢潴灰摥㬢 ††瀠潲⹣灣⁵‽㬰 †素攠獬⁥晩⠠捡楴湯㴠㴽∠瑳牡≴ ੻†††牰捯献慴畴⁳‽漢汮湩≥਻†††牰捯挮異㴠㈠〮਻†††晩⠠牰捯洮浥牯⁹㴽‽⤰笠 †††瀠潲⹣敭潭祲㴠㐠‵‪〱㐲⨠ㄠ㈰㬴 ††素 ††瀠潲⹣灵楴敭㴠䐠瑡⹥潮⡷㬩 †素攠獬⁥晩⠠捡楴湯㴠㴽∠敲瑳牡≴ ੻†††牰捯献慴畴⁳‽漢汮湩≥਻†††牰捯爮獥慴瑲⁳㴫ㄠ਻†††牰捯甮瑰浩⁥‽慄整渮睯⤨਻†††牰捯挮異㴠㈠㐮਻†††晩⠠牰捯洮浥牯⁹㴽‽⤰笠 †††瀠潲⹣敭潭祲㴠㐠‵‪〱㐲⨠ㄠ㈰㬴 ††素 †素 素ਊ†敲畴湲笠 †猠捵散獳›牴敵ਬ††潭敤›汣䕩數畣整⁤‿爢慥≬㨠∠潭正Ⱒ †洠獥慳敧›偠潲散獳␠獻牴摉⁽笤捡楴湯⁽硥捥瑵摥Ⱡ 素਻੽
+import { execFile } from "child_process";
+import { promisify } from "util";
+import { getActivePorts } from "./ports-service";
 
+const execFileAsync = promisify(execFile);
+
+export interface PM2Process {
+  id: number | string;
+  name: string;
+  pid: number;
+  status: "online" | "stopped" | "errored";
+  mode: "fork" | "cluster";
+  cpu: number; // percentage
+  memory: number; // bytes
+  uptime: number; // timestamp
+  restarts: number;
+  ports?: number[];
+}
+
+export interface PM2Summary {
+  total: number;
+  online: number;
+  stopped: number;
+  totalMemoryBytes: number;
+  avgCpuPercent: number;
+}
+
+export interface PM2ListResponse {
+  success: boolean;
+  mode: "real" | "mock";
+  timestamp: number;
+  summary: PM2Summary;
+  processes: PM2Process[];
+}
+
+export interface PM2ActionResponse {
+  success: boolean;
+  mode: "real" | "mock";
+  message: string;
+  error?: string;
+  statusCode?: number;
+}
+
+const INITIAL_MOCK_PROCESSES: PM2Process[] = [
+  {
+    id: 0,
+    name: "pmmanager-web",
+    pid: 10420,
+    status: "online",
+    mode: "fork",
+    cpu: 2.1,
+    memory: 45 * 1024 * 1024,
+    uptime: Date.now() - 18000000,
+    restarts: 0,
+  },
+  {
+    id: 1,
+    name: "web-app",
+    pid: 10421,
+    status: "online",
+    mode: "cluster",
+    cpu: 2.1,
+    memory: 48 * 1024 * 1024,
+    uptime: Date.now() - 14400000, // 4 hours ago
+    restarts: 0,
+  },
+  {
+    id: 2,
+    name: "api-server",
+    pid: 10422,
+    status: "online",
+    mode: "fork",
+    cpu: 1.4,
+    memory: 64 * 1024 * 1024,
+    uptime: Date.now() - 7200000, // 2 hours ago
+    restarts: 1,
+  },
+  {
+    id: 3,
+    name: "worker",
+    pid: 0,
+    status: "stopped",
+    mode: "fork",
+    cpu: 0,
+    memory: 0,
+    uptime: 0,
+    restarts: 3,
+  },
+];
+
+declare global {
+  var __pm2MockProcesses: PM2Process[] | undefined;
+}
+
+/**
+ * Retrieves the persistent in-memory mock PM2 processes.
+ */
+export function getMockProcesses(): PM2Process[] {
+  if (!globalThis.__pm2MockProcesses) {
+    globalThis.__pm2MockProcesses = INITIAL_MOCK_PROCESSES.map((p) => ({ ...p }));
+  }
+  return globalThis.__pm2MockProcesses;
+}
+
+/**
+ * Calculates summary metrics across processes.
+ */
+export function calculatePM2Summary(processes: PM2Process[]): PM2Summary {
+  const total = processes.length;
+  const online = processes.filter((p) => p.status === "online").length;
+  const stopped = processes.filter((p) => p.status === "stopped").length;
+  const totalMemoryBytes = processes.reduce((acc, p) => acc + (p.memory || 0), 0);
+  const avgCpuPercent =
+    total > 0
+      ? Number((processes.reduce((acc, p) => acc + (p.cpu || 0), 0) / total).toFixed(1))
+      : 0;
+
+  return {
+    total,
+    online,
+    stopped,
+    totalMemoryBytes,
+    avgCpuPercent,
+  };
+}
+
+/**
+ * Applies realistic metric jitter to mock processes:
+ * CPU: ±1.5%, Memory: ±2MB.
+ * For stopped processes, CPU is strictly 0.
+ */
+function applyMetricJitter(procs: PM2Process[]): PM2Process[] {
+  return procs.map((proc) => {
+    if (proc.status === "stopped") {
+      proc.cpu = 0;
+      return { ...proc, cpu: 0 };
+    }
+
+    // CPU jitter: ±1.5%
+    const cpuDelta = Math.random() * 3.0 - 1.5;
+    let newCpu = Number((proc.cpu + cpuDelta).toFixed(1));
+    if (newCpu < 0.2) newCpu = 0.5;
+    if (newCpu > 25.0) newCpu = Number((proc.cpu - 1.0).toFixed(1));
+
+    // Memory jitter: ±2MB
+    const memDelta = Math.round((Math.random() * 4 - 2) * 1024 * 1024);
+    const baseMem = proc.memory > 0 ? proc.memory : 32 * 1024 * 1024;
+    const newMem = Math.max(16 * 1024 * 1024, baseMem + memDelta);
+
+    proc.cpu = newCpu;
+    proc.memory = newMem;
+
+    return {
+      ...proc,
+      cpu: newCpu,
+      memory: newMem,
+    };
+  });
+}
+
+/**
+ * Retrieves PM2 processes with dual execution engine:
+ * Attempts host CLI `pm2 jlist`, and falls back to resilient mock with jitter.
+ */
+export async function getPM2Processes(): Promise<PM2ListResponse> {
+  // Try fetching active ports concurrently to map them to PM2 processes
+  let activePortsMap = new Map<number, number[]>();
+  try {
+    const portsData = await getActivePorts();
+    if (portsData && portsData.ports) {
+      for (const p of portsData.ports) {
+        if (p.pid) {
+          const existing = activePortsMap.get(p.pid) || [];
+          if (!existing.includes(p.port)) {
+            existing.push(p.port);
+          }
+          activePortsMap.set(p.pid, existing);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to fetch ports for mapping:", err);
+  }
+
+  // Attempt host CLI execution
+  try {
+    const { stdout } = await execFileAsync("pm2", ["jlist"], {
+      timeout: 3000,
+      shell: process.platform === "win32",
+    });
+
+    const parsed = JSON.parse(stdout);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const processes: PM2Process[] = parsed.map((item: Record<string, unknown>) => {
+        const id = (item.pm_id ?? item.name ?? 0) as number | string;
+        const name = (item.name ?? `process-${id}`) as string;
+        const pid = typeof item.pid === "number" ? item.pid : 0;
+        const pm2Env = (item.pm2_env ?? {}) as Record<string, unknown>;
+        const monit = (item.monit ?? {}) as Record<string, unknown>;
+
+        let status: "online" | "stopped" | "errored" = "errored";
+        if (pm2Env.status === "online") status = "online";
+        else if (pm2Env.status === "stopped") status = "stopped";
+
+        const mode = pm2Env.exec_mode === "cluster_mode" ? "cluster" : "fork";
+        const cpu = typeof monit.cpu === "number" ? monit.cpu : 0;
+        const memory = typeof monit.memory === "number" ? monit.memory : 0;
+        const uptime = typeof pm2Env.pm_uptime === "number" ? pm2Env.pm_uptime : Date.now();
+        const restarts = typeof pm2Env.restart_time === "number" ? pm2Env.restart_time : 0;
+        
+        // Match ports by PID
+        const ports = activePortsMap.get(pid) || [];
+
+        return { id, name, pid, status, mode, cpu, memory, uptime, restarts, ports };
+      });
+
+      const summary = calculatePM2Summary(processes);
+      return {
+        success: true,
+        mode: "real",
+        timestamp: Date.now(),
+        summary,
+        processes,
+      };
+    }
+  } catch {
+    // PM2 CLI absent or unavailable -> use resilient mock fallback
+  }
+
+  // Resilient Mock Fallback
+  const mockProcs = getMockProcesses();
+  const processes = applyMetricJitter(mockProcs).map(p => ({
+    ...p,
+    ports: activePortsMap.get(p.pid) || (p.pid === 10420 ? [3000] : p.pid === 10421 ? [3001] : p.pid === 10422 ? [8000] : []) // Mock port fallback
+  }));
+  const summary = calculatePM2Summary(processes);
+
+  return {
+    success: true,
+    mode: "mock",
+    timestamp: Date.now(),
+    summary,
+    processes,
+  };
+}
+
+/**
+ * Triggers start, stop, or restart action for a PM2 process.
+ * Validates inputs, executes host CLI, and mutates process state.
+ */
+export async function executePM2Action(
+  action: unknown,
+  id: unknown
+): Promise<PM2ActionResponse> {
+  // Validate action
+  if (
+    typeof action !== "string" ||
+    !["start", "stop", "restart", "flush"].includes(action)
+  ) {
+    return {
+      success: false,
+      mode: "mock",
+      message: "Invalid action. Must be 'start', 'stop', 'restart', or 'flush'",
+      error: "Invalid action. Must be 'start', 'stop', 'restart', or 'flush'",
+      statusCode: 400,
+    };
+  }
+
+  // Validate ID
+  if (id === undefined || id === null || String(id).trim() === "") {
+    return {
+      success: false,
+      mode: "mock",
+      message: "Missing process ID",
+      error: "Missing process ID",
+      statusCode: 400,
+    };
+  }
+
+  const strId = String(id).trim();
+
+  // Sanitize against injection: alphanumeric, underscore, hyphen, and dot only
+  if (!/^[a-zA-Z0-9_\-\.]+$/.test(strId)) {
+    return {
+      success: false,
+      mode: "mock",
+      message: "Invalid process ID. Alphanumeric only",
+      error: "Invalid process ID. Alphanumeric only",
+      statusCode: 400,
+    };
+  }
+
+  // Handle self-restarting gracefully so the API connection isn't severed instantly
+  const isSelf = process.env.name === strId || strId === "server-manager" || strId === "pmmanager";
+  if (action === "restart" && isSelf) {
+    setTimeout(() => {
+      execFile("pm2", ["restart", strId], { shell: process.platform === "win32" }, (error) => {
+        if (error) console.error(`[PM2 CLI] Failed to self-restart: ${error.message}`);
+      });
+    }, 1500); // 1.5s delay to allow the HTTP response to be fully sent
+    
+    return {
+      success: true,
+      mode: "real",
+      message: `Self-restart initiated. The dashboard will be back online in a few seconds.`,
+    };
+  }
+
+  // Attempt host CLI execution
+  let cliExecuted = false;
+  let cliError = "";
+  try {
+    await execFileAsync("pm2", [action, strId], {
+      timeout: 15000,
+      shell: process.platform === "win32",
+    });
+    cliExecuted = true;
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    cliError = errorMsg;
+    console.log(`[PM2 CLI] execFile pm2 ${action} ${strId} attempt: ${errorMsg}`);
+  }
+
+  // Mutate mock process state
+  const mockProcs = getMockProcesses();
+  const proc = mockProcs.find(
+    (p) => String(p.id) === strId || p.name === strId
+  );
+
+  // If host CLI failed and process does not exist in mock store -> 404 or 500
+  if (!cliExecuted && !proc) {
+    return {
+      success: false,
+      mode: "mock",
+      message: `Process ${strId} failed to ${action}: ${cliError}`,
+      error: `Process ${strId} failed to ${action}: ${cliError}`,
+      statusCode: 500,
+    };
+  }
+
+  if (proc) {
+    if (action === "stop") {
+      proc.status = "stopped";
+      proc.cpu = 0;
+    } else if (action === "start") {
+      proc.status = "online";
+      proc.cpu = 2.0;
+      if (proc.memory === 0) {
+        proc.memory = 45 * 1024 * 1024;
+      }
+      proc.uptime = Date.now();
+    } else if (action === "restart") {
+      proc.status = "online";
+      proc.restarts += 1;
+      proc.uptime = Date.now();
+      proc.cpu = 2.4;
+      if (proc.memory === 0) {
+        proc.memory = 45 * 1024 * 1024;
+      }
+    }
+  }
+
+  return {
+    success: true,
+    mode: cliExecuted ? "real" : "mock",
+    message: `Process ${strId} ${action} executed`,
+  };
+}
 export async function getPM2Logs(appName: string, lines: number = 15): Promise<string> {
   return new Promise((resolve) => {
     const { exec } = require("child_process");
-    exec(\pm2 logs \ --lines \ --nostream\, (error: any, stdout: string, stderr: string) => {
+    exec(`pm2 logs ${appName} --lines ${lines} --nostream`, (error: any, stdout: string, stderr: string) => {
       if (error) { resolve('Error fetching logs: ' + error.message); return; }
       resolve(stdout || stderr || 'No logs found.');
     });
