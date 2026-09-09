@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Verify the request came from Discord
-  const isValidRequest = verifyKey(rawBody, signature, timestamp, PUBLIC_KEY);
+  const isValidRequest = await verifyKey(rawBody, signature, timestamp, PUBLIC_KEY);
   if (!isValidRequest) {
     return NextResponse.json({ error: "Bad request signature" }, { status: 401 });
   }
