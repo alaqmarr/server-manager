@@ -6,11 +6,15 @@ import { getPM2Processes, executePM2Action, getPM2Logs } from "@/lib/pm2-service
 async function editInteractionResponse(applicationId: string, token: string, data: any) {
   const url = `https://discord.com/api/v10/webhooks/${applicationId}/${token}/messages/@original`;
   try {
-    await fetch(url, {
+    const res = await fetch(url, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
+    console.log(`[Discord] Webhook response status: ${res.status}`);
+    if (!res.ok) {
+      console.error("[Discord] Webhook error response:", await res.text());
+    }
   } catch (err) {
     console.error("Failed to edit interaction response:", err);
   }
@@ -31,12 +35,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
 
+  console.log("[Discord] Incoming request payload:", rawBody.substring(0, 200) + "...");
   const isValidRequest = await verifyKey(rawBody, signature, timestamp, PUBLIC_KEY);
   if (!isValidRequest) {
+    console.error("[Discord] 🚨 SIGNATURE VALIDATION FAILED for payload:", rawBody);
     return NextResponse.json({ error: "Bad request signature" }, { status: 401 });
   }
 
   const interaction = JSON.parse(rawBody);
+  console.log(`[Discord] Valid interaction received. Type: ${interaction.type}, Command: ${interaction.data?.name}`);
 
   if (interaction.type === InteractionType.PING) {
     return NextResponse.json({ type: InteractionResponseType.PONG });
