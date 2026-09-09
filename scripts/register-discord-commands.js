@@ -28,6 +28,36 @@ const commands = [
     name: 'status',
     description: 'Get the current health and status of the Nexus server and PM2 apps',
     type: 1 // CHAT_INPUT
+  },
+  {
+    name: 'restart',
+    description: 'Restart a specific PM2 app or all apps',
+    type: 1,
+    options: [{ name: 'app', description: 'Name of the app (or "all")', type: 3, required: true }]
+  },
+  {
+    name: 'start',
+    description: 'Start a specific PM2 app',
+    type: 1,
+    options: [{ name: 'app', description: 'Name of the app', type: 3, required: true }]
+  },
+  {
+    name: 'stop',
+    description: 'Stop a specific PM2 app',
+    type: 1,
+    options: [{ name: 'app', description: 'Name of the app', type: 3, required: true }]
+  },
+  {
+    name: 'flush',
+    description: 'Flush logs for a specific PM2 app or all apps',
+    type: 1,
+    options: [{ name: 'app', description: 'Name of the app (or "all")', type: 3, required: true }]
+  },
+  {
+    name: 'logs',
+    description: 'Fetch the latest logs for a PM2 app',
+    type: 1,
+    options: [{ name: 'app', description: 'Name of the app', type: 3, required: true }]
   }
 ];
 
