@@ -281,14 +281,16 @@ export async function executePM2Action(
 
   // Attempt host CLI execution
   let cliExecuted = false;
+  let cliError = "";
   try {
     await execFileAsync("pm2", [action, strId], {
-      timeout: 5000,
+      timeout: 15000,
       shell: process.platform === "win32",
     });
     cliExecuted = true;
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
+    cliError = errorMsg;
     console.log(`[PM2 CLI] execFile pm2 ${action} ${strId} attempt: ${errorMsg}`);
   }
 
@@ -298,14 +300,14 @@ export async function executePM2Action(
     (p) => String(p.id) === strId || p.name === strId
   );
 
-  // If host CLI failed and process does not exist in mock store -> 404
+  // If host CLI failed and process does not exist in mock store -> 404 or 500
   if (!cliExecuted && !proc) {
     return {
       success: false,
       mode: "mock",
-      message: `Process ${strId} not found`,
-      error: "Process not found",
-      statusCode: 404,
+      message: `Process ${strId} failed to ${action}: ${cliError}`,
+      error: `Process ${strId} failed to ${action}: ${cliError}`,
+      statusCode: 500,
     };
   }
 

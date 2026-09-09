@@ -74,6 +74,7 @@ export default function PM2Manager() {
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
   const [scripts, setScripts] = useState<any[]>([]);
+  const [feedback, setFeedback] = useState<{title: string, message: string, type: 'error' | 'success'} | null>(null);
 
   const fetchProcesses = async () => {
     try {
@@ -116,12 +117,12 @@ export default function PM2Manager() {
       const res = await fetch(`/api/scripts/${scriptId}/execute`, { method: "POST" });
       const data = await res.json();
       if (data.success) {
-        alert("Script executed successfully!\nOutput:\n" + stripAnsi(data.output || "No output"));
+        setFeedback({ title: "Success", message: "Script executed successfully!\n" + stripAnsi(data.output || "No output"), type: "success" });
       } else {
-        alert("Failed to execute script: " + data.error);
+        setFeedback({ title: "Error", message: "Failed to execute script: " + data.error, type: "error" });
       }
     } catch (error: any) {
-      alert("Error executing script.");
+      setFeedback({ title: "Error", message: "Error executing script.", type: "error" });
     } finally {
       setActionLoading((prev) => ({ ...prev, [key]: false }));
     }
@@ -141,7 +142,7 @@ export default function PM2Manager() {
       }
       await fetchProcesses();
     } catch (err: any) {
-      alert(err.message);
+      setFeedback({ title: "Action Failed", message: err.message || "An unexpected error occurred", type: "error" });
     } finally {
       setActionLoading((prev) => ({ ...prev, [actionKey]: false }));
     }
@@ -402,6 +403,30 @@ export default function PM2Manager() {
           </div>
         )}
       </div>
+
+      {feedback && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setFeedback(null)} />
+          <div className="bg-surface-900 border border-white/10 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className={`absolute top-0 left-0 w-full h-1 ${feedback.type === 'error' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+            <h3 className={`text-xl font-bold mb-3 ${feedback.type === 'error' ? 'text-rose-400' : 'text-emerald-400'}`}>
+              {feedback.title}
+            </h3>
+            <div className="bg-black/40 rounded-lg p-4 max-h-[60vh] overflow-y-auto custom-scrollbar border border-white/5">
+              <pre className="text-slate-300 text-sm whitespace-pre-wrap font-mono leading-relaxed">
+                {feedback.message}
+              </pre>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button onClick={() => setFeedback(null)} className="px-5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+
