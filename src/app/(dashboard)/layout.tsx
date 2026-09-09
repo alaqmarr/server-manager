@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/Sidebar";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -7,6 +8,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
 
   return (
     <div className="flex h-screen bg-surface-950 overflow-hidden text-slate-300 font-sans selection:bg-brand-500/30">
