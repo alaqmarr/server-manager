@@ -101,7 +101,7 @@ export default function UsersPage() {
                     <td className="p-4">{u.id}</td>
                     <td className="p-4 font-medium text-white">{u.username}</td>
                     <td className="p-4">
-                      <span className={\`px-2 py-1 rounded text-xs \${u.role === 'admin' ? 'bg-purple-500/20 text-purple-400' : u.role === 'client' ? 'bg-blue-500/20 text-blue-400' : 'bg-brand-500/20 text-brand-400'}\`}>
+                      <span className={`px-2 py-1 rounded text-xs ${u.role === 'admin' ? 'bg-purple-500/20 text-purple-400' : u.role === 'client' ? 'bg-blue-500/20 text-blue-400' : 'bg-brand-500/20 text-brand-400'}`}>
                         {u.role.toUpperCase()}
                       </span>
                     </td>
