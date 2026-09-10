@@ -52,51 +52,45 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const { username, password, role = "developer" } = (body as {
+    const { username, password, role = "developer", allowedProcess } = (body as {
       username?: string;
       password?: string;
       role?: string;
+      allowedProcess?: string;
     }) ?? {};
 
-    if (!username || typeof username !== "string" || username.trim().length < 3) {
-      return NextResponse.json(
-        { error: "Username must be at least 3 characters long" },
-        { status: 400 }
-      );
+    if (!username || !password || typeof username !== "string" || typeof password !== "string") {
+      return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
     }
 
-    if (!password || typeof password !== "string" || password.length < 6) {
-      return NextResponse.json(
-        { error: "Password must be at least 6 characters long" },
-        { status: 400 }
-      );
+    if (username.length < 3) {
+      return NextResponse.json({ error: "Username must be at least 3 characters" }, { status: 400 });
     }
 
-    const normalizedRole = typeof role === "string" ? role.trim().toLowerCase() : "developer";
-    if (normalizedRole !== "admin" && normalizedRole !== "developer") {
-      return NextResponse.json(
-        { error: "Role must be either 'admin' or 'developer'" },
-        { status: 400 }
-      );
+    if (password.length < 8) {
+      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
     }
 
-    if (normalizedRole === "admin" && adminExists()) {
+    const validRoles = ["admin", "developer", "client"];
+    if (!validRoles.includes(role.toLowerCase())) {
+      return NextResponse.json({ error: "Role must be admin, developer, or client" }, { status: 400 });
+    }
+
+    const existingUser = getUserByUsername(username);
+    if (existingUser) {
+      return NextResponse.json({ error: "Username already exists" }, { status: 400 });
+    }
+
+    if (role.toLowerCase() === "admin" && adminExists()) {
       return NextResponse.json(
         { error: "Only one administrator account is permitted" },
         { status: 400 }
       );
     }
 
-    const existing = getUserByUsername(username.trim());
-    if (existing) {
-      return NextResponse.json(
-        { error: "Username already exists" },
-        { status: 400 }
-      );
-    }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const created = createUser(username.trim(), passwordHash, normalizedRole);
+    const created = createUser(username.trim(), passwordHash, role.toLowerCase(), allowedProcess);
 
     if (!created) {
       return NextResponse.json(

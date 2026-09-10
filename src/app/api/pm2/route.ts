@@ -12,6 +12,14 @@ export async function GET() {
     }
 
     const data = await getPM2Processes();
+    const user = session.user as any;
+
+    if (user.role === "client") {
+      const allowed = user.allowedProcess;
+      if (!allowed) return NextResponse.json({ ...data, processes: [] }, { status: 200 });
+      return NextResponse.json({ ...data, processes: data.processes.filter((p: any) => p.name === allowed) }, { status: 200 });
+    }
+
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error("Error in GET /api/pm2:", error);

@@ -23,6 +23,17 @@ export async function POST(request: Request) {
 
     const { action, id } = (body as { action?: unknown; id?: unknown }) ?? {};
 
+    const user = session.user as any;
+    if (user.role === "client") {
+      if (id !== user.allowedProcess) {
+        return NextResponse.json({ error: "Unauthorized for this process" }, { status: 403 });
+      }
+      // Optional: Maybe restrict clients from flushing or deleting, allow only restart
+      if (action !== "restart") {
+        return NextResponse.json({ error: "Clients can only restart processes" }, { status: 403 });
+      }
+    }
+
     const result = await executePM2Action(action, id);
 
     if (!result.success && result.statusCode) {

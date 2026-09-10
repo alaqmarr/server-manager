@@ -43,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             id: user.id.toString(),
             name: user.username,
             role: user.role || "admin",
+            allowedProcess: user.allowedProcess || null,
           };
         }
 
@@ -60,8 +61,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.name = token.name;
       }
       if (session.user) {
-        (session.user as { id?: string; name?: string | null; email?: string | null; role?: string }).role =
-          (token.role as string) || "admin";
+        const u = session.user as any;
+        u.role = (token.role as string) || "admin";
+        u.allowedProcess = token.allowedProcess || null;
       }
       return session;
     },
@@ -69,7 +71,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.sub = user.id;
         token.name = user.name;
-        token.role = (user as { role?: string }).role || "admin";
+        token.role = (user as any).role || "admin";
+        token.allowedProcess = (user as any).allowedProcess || null;
       }
       return token;
     },

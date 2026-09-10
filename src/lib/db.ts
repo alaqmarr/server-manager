@@ -15,6 +15,38 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Enable WAL mode for performance and concurrency, and enable foreign keys
 db.pragma('journal_mode = WAL');
+
+// 🚨 Auto-Migration: Add 'client' role and 'allowedProcess' column
+try {
+  const tableInfo = db.pragma('table_info(users)') as any[];
+  if (tableInfo.length > 0) { // Table exists
+    const hasAllowedProcess = tableInfo.some(col => col.name === 'allowedProcess');
+    if (!hasAllowedProcess) {
+      console.log("[DB] Migrating users table to support clients...");
+      db.pragma('foreign_keys = OFF');
+      db.exec(`
+        BEGIN TRANSACTION;
+        CREATE TABLE users_v2 (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username TEXT UNIQUE NOT NULL COLLATE NOCASE,
+          passwordHash TEXT NOT NULL,
+          role TEXT CHECK(role IN ('admin', 'developer', 'client')) NOT NULL DEFAULT 'admin',
+          allowedProcess TEXT,
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT INTO users_v2 (id, username, passwordHash, role, createdAt)
+        SELECT id, username, passwordHash, role, createdAt FROM users;
+        DROP TABLE users;
+        ALTER TABLE users_v2 RENAME TO users;
+        COMMIT;
+      `);
+      db.pragma('foreign_keys = ON');
+    }
+  }
+} catch (e) {
+  console.error("[DB] Migration failed:", e);
+}
+
 db.pragma('foreign_keys = ON');
 
 // Initialize schema
@@ -23,7 +55,8 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL COLLATE NOCASE,
     passwordHash TEXT NOT NULL,
-    role TEXT CHECK(role IN ('admin', 'developer')) NOT NULL DEFAULT 'admin',
+    role TEXT CHECK(role IN ('admin', 'developer', 'client')) NOT NULL DEFAULT 'admin',
+    allowedProcess TEXT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -122,7 +155,8 @@ export interface UserRecord {
   id: number;
   username: string;
   passwordHash: string;
-  role: "admin" | "developer" | string;
+  role: "admin" | "developer" | "client" | string;
+  allowedProcess?: string;
   createdAt?: string;
 }
 
@@ -151,14 +185,14 @@ export function createAdmin(username: string, passwordHash: string): boolean {
   }
 }
 
-export function createUser(username: string, passwordHash: string, role: string = 'developer'): boolean {
+export function createUser(username: string, passwordHash: string, role: string = 'developer', allowedProcess?: string): boolean {
   try {
-    const normalizedRole = role.toLowerCase() === 'admin' ? 'admin' : 'developer';
+    const normalizedRole = role.toLowerCase() === 'admin' ? 'admin' : (role.toLowerCase() === 'client' ? 'client' : 'developer');
     const stmt = db.prepare(`
-      INSERT INTO users (username, passwordHash, role)
-      VALUES (?, ?, ?);
+      INSERT INTO users (username, passwordHash, role, allowedProcess)
+      VALUES (?, ?, ?, ?);
     `);
-    const info = stmt.run(username.trim(), passwordHash, normalizedRole);
+    const info = stmt.run(username.trim(), passwordHash, normalizedRole, allowedProcess || null);
     return info.changes > 0;
   } catch (error) {
     console.error('Error creating user:', error);
@@ -168,11 +202,11 @@ export function createUser(username: string, passwordHash: string, role: string 
 
 export function getUserByUsername(username: string): UserRecord | null {
   try {
-    const stmt = db.prepare('SELECT id, username, passwordHash, role, createdAt FROM users WHERE username = ? COLLATE NOCASE');
+    const stmt = db.prepare('SELECT id, username, passwordHash, role, allowedProcess, createdAt FROM users WHERE username = ? COLLATE NOCASE');
     const user = stmt.get(username.trim()) as UserRecord | undefined;
     return user ?? null;
   } catch (error) {
-    console.error('Error getting user by username:', error);
+    console.error('Error fetching user by username:', error);
     return null;
   }
 }
@@ -182,7 +216,7 @@ export const getAdminByUsername = getUserByUsername;
 
 export function listUsers(): Omit<UserRecord, 'passwordHash'>[] {
   try {
-    const stmt = db.prepare('SELECT id, username, role, createdAt FROM users ORDER BY id ASC');
+    const stmt = db.prepare('SELECT id, username, role, allowedProcess, createdAt FROM users ORDER BY id ASC');
     return (stmt.all() as Omit<UserRecord, 'passwordHash'>[]) ?? [];
   } catch (error) {
     console.error('Error listing users:', error);
