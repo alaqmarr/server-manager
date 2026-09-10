@@ -36,7 +36,7 @@ export const authConfig: NextAuthConfig = {
         if (nextUrl.pathname.startsWith("/api/")) {
           return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
-        return true;
+        return false;
       }
 
       // If user is a client, prevent them from accessing root or other admin pages

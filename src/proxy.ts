@@ -13,14 +13,20 @@ export default NextAuth(authConfig).auth((req) => {
       if (user?.role === "client" && user.allowedProcess !== processName) {
         return new NextResponse("Unauthorized: You do not have permission to view this application.", { status: 403 });
       }
-      return NextResponse.rewrite(new URL(`/client/${processName}${url.pathname}`, req.url));
+      
+      // Do not rewrite /api/ requests so they hit the global API routes
+      if (!url.pathname.startsWith("/api/")) {
+        return NextResponse.rewrite(new URL(`/client/${processName}${url.pathname}`, req.url));
+      }
     }
   }
 
   if (hostname.endsWith(".localhost:3444") || hostname.endsWith(".localhost:3000")) {
      const processName = hostname.split(".")[0];
      if (processName && processName !== "localhost") {
-         return NextResponse.rewrite(new URL(`/client/${processName}${url.pathname}`, req.url));
+         if (!url.pathname.startsWith("/api/")) {
+             return NextResponse.rewrite(new URL(`/client/${processName}${url.pathname}`, req.url));
+         }
      }
   }
   
