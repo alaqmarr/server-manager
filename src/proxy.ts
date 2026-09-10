@@ -6,10 +6,16 @@ export default NextAuth(authConfig).auth((req) => {
   const url = req.nextUrl;
   const hostname = req.headers.get("host") || "";
   
+  const user = (req as any).auth?.user;
+  
+  // Manually enforce authentication redirect if NextAuth authorized callback falls through
+  if (!user && !url.pathname.startsWith("/login") && !url.pathname.startsWith("/api/auth")) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
   if (hostname.endsWith(".nexus.alaqmar.dev") && hostname !== "nexus.alaqmar.dev") {
     const processName = hostname.replace(".nexus.alaqmar.dev", "");
     if (processName && !processName.includes(".")) {
-      const user = (req as any).auth?.user;
       if (user?.role === "client" && user.allowedProcess !== processName) {
         return new NextResponse("Unauthorized: You do not have permission to view this application.", { status: 403 });
       }
