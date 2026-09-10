@@ -7,16 +7,28 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   // Ensure authentication guard
-  const { error } = await requireAuth(req);
-  if (error) {
-    return error;
+  const authResult = await requireAuth(req);
+  if (authResult.error) {
+    return authResult.error;
   }
+  const session = authResult.session;
+  const user = session?.user as any;
 
   // Ensure worker is running
   startVitalsWorker();
 
   const { searchParams } = new URL(req.url);
-  const processParam = searchParams.get("process");
+  let processParam = searchParams.get("process");
+
+  if (user?.role === "client") {
+    const allowed = user.allowedProcess;
+    if (processParam && processParam !== allowed) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+    // Force the param to their allowed process if none provided
+    processParam = allowed;
+  }
+
   const hoursParam = searchParams.get("hours");
 
   // Parse hours gracefully for boundary testing

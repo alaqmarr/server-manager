@@ -182,20 +182,22 @@ export function VitalsChart() {
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Process Selector */}
-          <div className="relative">
-            <select
-              value={selectedProcess}
-              onChange={(e) => setSelectedProcess(e.target.value)}
-              className="appearance-none bg-surface-900 border border-white/10 rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-slate-200 hover:border-brand-500/40 focus:outline-none focus:border-brand-400 transition-colors cursor-pointer"
-            >
-              {processes.map((proc) => (
-                <option key={proc.id} value={proc.name} className="bg-surface-900 text-white">
-                  {proc.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          </div>
+          {processes.length > 1 && (
+            <div className="relative">
+              <select
+                value={selectedProcess}
+                onChange={(e) => setSelectedProcess(e.target.value)}
+                className="appearance-none bg-surface-900 border border-white/10 rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-slate-200 hover:border-brand-500/40 focus:outline-none focus:border-brand-400 transition-colors cursor-pointer"
+              >
+                {processes.map((proc) => (
+                  <option key={proc.id} value={proc.name} className="bg-surface-900 text-white">
+                    {proc.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          )}
 
           {/* Timeframe Buttons */}
           <div className="flex items-center bg-surface-950/70 p-1 rounded-xl border border-white/5">
