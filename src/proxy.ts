@@ -14,8 +14,8 @@ export default NextAuth(authConfig).auth((req) => {
         return new NextResponse("Unauthorized: You do not have permission to view this application.", { status: 403 });
       }
       
-      // Do not rewrite /api/ requests so they hit the global API routes
-      if (!url.pathname.startsWith("/api/")) {
+      // Do not rewrite /api/ or /login requests so they hit the global routes
+      if (!url.pathname.startsWith("/api/") && !url.pathname.startsWith("/login")) {
         return NextResponse.rewrite(new URL(`/client/${processName}${url.pathname}`, req.url));
       }
     }
@@ -24,7 +24,7 @@ export default NextAuth(authConfig).auth((req) => {
   if (hostname.endsWith(".localhost:3444") || hostname.endsWith(".localhost:3000")) {
      const processName = hostname.split(".")[0];
      if (processName && processName !== "localhost") {
-         if (!url.pathname.startsWith("/api/")) {
+         if (!url.pathname.startsWith("/api/") && !url.pathname.startsWith("/login")) {
              return NextResponse.rewrite(new URL(`/client/${processName}${url.pathname}`, req.url));
          }
      }
