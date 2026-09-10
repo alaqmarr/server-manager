@@ -30,6 +30,7 @@ export function Sidebar({ userName }: { userName: string }) {
 
   const navItems = [
   { name: "Dashboard", href: "/", icon: Activity },
+  { name: "Users", href: "/users", icon: Shield },
   { name: "File Explorer", href: "/files", icon: FolderOpen },
   { name: "Nginx Manager", href: "/nginx", icon: Globe },
   { name: "PM2 Manager", href: "/pm2", icon: Server },
