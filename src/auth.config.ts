@@ -24,9 +24,8 @@ export const authConfig: NextAuthConfig = {
       if (isOnLogin) {
         if (isLoggedIn) {
           const user = auth.user as any;
-          if (user?.role === "client" && user?.allowedProcess) {
-            return Response.redirect(new URL(`/client/${user.allowedProcess}`, nextUrl));
-          }
+          // Clients are now automatically routed by wildcard subdomains to their process
+          // so we just send them to / on their specific subdomain.
           return Response.redirect(new URL("/", nextUrl));
         }
         return true;
@@ -41,15 +40,11 @@ export const authConfig: NextAuthConfig = {
       }
 
       // If user is a client, prevent them from accessing root or other admin pages
+      // EXCEPT when they are hitting / on their allowed subdomain, which proxy.ts rewrites to /client/[process]
       const user = auth?.user as any;
       if (user?.role === "client") {
         if (!nextUrl.pathname.startsWith("/client/") && !nextUrl.pathname.startsWith("/api/")) {
-           if (user.allowedProcess) {
-             return Response.redirect(new URL(`/client/${user.allowedProcess}`, nextUrl));
-           } else {
-             // Fallback if misconfigured
-             return false;
-           }
+           return false; // Prevent access to admin pages (NextAuth will bounce them to /login)
         }
       }
 
