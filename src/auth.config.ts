@@ -43,8 +43,16 @@ export const authConfig: NextAuthConfig = {
       // EXCEPT when they are hitting / on their allowed subdomain, which proxy.ts rewrites to /client/[process]
       const user = auth?.user as any;
       if (user?.role === "client") {
+        const hostname = nextUrl.hostname || "";
+        const isWildcard = hostname.endsWith(".nexus.alaqmar.dev") && hostname !== "nexus.alaqmar.dev";
+        const isLocalWildcard = hostname.endsWith(".localhost");
+        
         if (!nextUrl.pathname.startsWith("/client/") && !nextUrl.pathname.startsWith("/api/")) {
-           return false; // Prevent access to admin pages (NextAuth will bounce them to /login)
+           // Allow if they are hitting / on a valid wildcard subdomain
+           if ((isWildcard || isLocalWildcard) && nextUrl.pathname === "/") {
+               return true;
+           }
+           return false; // Prevent access to admin pages
         }
       }
 
