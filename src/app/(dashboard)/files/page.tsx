@@ -14,73 +14,144 @@ export default function FilesPage() {
   const [createName, setCreateName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { loadDir(); }, []);
-
   const loadDir = async (dir?: string) => {
     setLoading(true);
-    const res = await fetch(`/api/files?dir=${encodeURIComponent(dir || currentDir)}`);
-    if (res.ok) {
-      const data = await res.json();
-      setItems(data.items || []);
-      setCurrentDir(data.currentDir);
-      setParentDir(data.parentDir);
+    try {
+      const res = await fetch(`/api/files?dir=${encodeURIComponent(dir || currentDir)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setItems(data.items || []);
+        setCurrentDir(data.currentDir);
+        setParentDir(data.parentDir);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        console.error("Failed to load directory:", data.error || res.statusText);
+      }
+    } catch (err) {
+      console.error("Error loading directory:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  useEffect(() => { loadDir(); }, []);
 
   const loadFile = async (path: string) => {
     setLoading(true);
-    const res = await fetch("/api/files", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ action: "read", target: path }) });
-    if (res.ok) {
-      const data = await res.json();
-      setContent(data.content || "");
-      setSelectedFile(path);
+    try {
+      const res = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "read", target: path })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setContent(data.content || "");
+        setSelectedFile(path);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert("Failed to load file: " + (data.error || res.statusText));
+      }
+    } catch (err: any) {
+      alert("Error reading file: " + err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const saveFile = async () => {
     if (!selectedFile) return;
     setLoading(true);
-    await fetch("/api/files", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ action: "save", target: selectedFile, content }) });
-    setLoading(false);
-    alert("Saved!");
+    try {
+      const res = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "save", target: selectedFile, content })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert("Failed to save file: " + (data.error || res.statusText));
+      } else {
+        alert("Saved!");
+      }
+    } catch (err: any) {
+      alert("Error saving file: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (path: string) => {
-    if(!confirm("Delete this?")) return;
-    await fetch("/api/files", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ action: "delete", target: path }) });
-    if (selectedFile === path) setSelectedFile(null);
-    loadDir(currentDir);
+    if (!confirm("Delete this?")) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", target: path })
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert("Failed to delete: " + (data.error || res.statusText));
+      } else {
+        if (selectedFile === path) setSelectedFile(null);
+        await loadDir(currentDir);
+      }
+    } catch (err: any) {
+      alert("Error deleting: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
     setLoading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("targetDir", currentDir);
-    
-    const res = await fetch("/api/files/upload", { method: "POST", body: formData });
-    if (res.ok) {
-      loadDir(currentDir);
-    } else {
-      alert("Upload failed.");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("targetDir", currentDir);
+      
+      const res = await fetch("/api/files/upload", { method: "POST", body: formData });
+      if (res.ok) {
+        await loadDir(currentDir);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert("Upload failed: " + (data.error || res.statusText));
+      }
+    } catch (err: any) {
+      alert("Upload failed: " + err.message);
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
-    setLoading(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleCreate = async (isDir: boolean) => {
     if (!createName) return;
-    const target = currentDir + "/" + createName;
-    const action = isDir ? "mkdir" : "save";
-    await fetch("/api/files", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ action, target, content: "" }) });
-    setCreateName("");
-    loadDir(currentDir);
+    setLoading(true);
+    try {
+      const target = currentDir + "/" + createName;
+      const action = isDir ? "mkdir" : "save";
+      const res = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, target, content: "" })
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert("Failed to create: " + (data.error || res.statusText));
+      } else {
+        setCreateName("");
+        await loadDir(currentDir);
+      }
+    } catch (err: any) {
+      alert("Error creating: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

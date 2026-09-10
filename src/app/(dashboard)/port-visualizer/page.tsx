@@ -18,7 +18,7 @@ export default function PortVisualizerPage() {
               Port Visualizer
             </h1>
             <p className="text-slate-400 text-sm mt-1.5">
-              Interactive grid map of your server's ports
+              Interactive grid map of your server&apos;s ports
             </p>
           </div>
         </div>

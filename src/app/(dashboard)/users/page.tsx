@@ -11,10 +11,15 @@ export default function UsersPage() {
   const [allowedProcess, setAllowedProcess] = useState("");
 
   const fetchUsers = async () => {
-    const res = await fetch("/api/users");
-    const data = await res.json();
-    if (data.users) setUsers(data.users);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/users");
+      const data = await res.json().catch(() => ({}));
+      if (data.users) setUsers(data.users);
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -23,18 +28,25 @@ export default function UsersPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, role, allowedProcess: role === "client" ? allowedProcess : undefined })
-    });
-    const data = await res.json();
-    if (data.error) alert(data.error);
-    else {
-      setUsername("");
-      setPassword("");
-      setAllowedProcess("");
-      fetchUsers();
+    setLoading(true);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, role, allowedProcess: role === "client" ? allowedProcess : undefined })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.error) alert(data.error);
+      else {
+        setUsername("");
+        setPassword("");
+        setAllowedProcess("");
+        await fetchUsers();
+      }
+    } catch (err: any) {
+      alert("Error creating user: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 

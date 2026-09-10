@@ -264,7 +264,7 @@ export function Fail2BanManager({
                 />
                 <span className="font-mono">{jailName}</span>
                 <span
-                  className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${
+                  className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
                     count > 0
                       ? "bg-red-500/20 text-red-300"
                       : "bg-emerald-500/20 text-emerald-300"

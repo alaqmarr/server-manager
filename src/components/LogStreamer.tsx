@@ -344,7 +344,7 @@ export default function LogStreamer({
 
               {/* Process Tag */}
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded border font-mono font-medium shrink-0 uppercase tracking-tight ${getProcessColor(
+                className={`text-[10px] px-1.5 py-0.5 rounded border font-mono font-medium shrink-0 uppercase tracking-tight ${getProcessColor(
                   log.process
                 )}`}
               >
@@ -353,11 +353,11 @@ export default function LogStreamer({
 
               {/* Type Badge (for stderr or system) */}
               {log.type === "stderr" ? (
-                <span className="text-[10px] px-1 py-0.2 rounded bg-rose-500/20 text-rose-400 font-bold shrink-0">
+                <span className="text-[10px] px-1 py-0.5 rounded bg-rose-500/20 text-rose-400 font-bold shrink-0">
                   ERR
                 </span>
               ) : log.type === "system" ? (
-                <span className="text-[10px] px-1 py-0.2 rounded bg-sky-500/20 text-sky-400 font-bold shrink-0">
+                <span className="text-[10px] px-1 py-0.5 rounded bg-sky-500/20 text-sky-400 font-bold shrink-0">
                   SYS
                 </span>
               ) : null}

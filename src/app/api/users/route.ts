@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
     }
 
     const { username, password, role = "developer", allowedProcess } = (body as {
@@ -135,7 +135,7 @@ export async function PATCH(req: Request) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
     }
 
     const { id, role } = (body as { id?: number | string; role?: string }) ?? {};

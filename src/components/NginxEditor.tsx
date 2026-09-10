@@ -331,7 +331,7 @@ export default function NginxEditor() {
               <button onClick={() => setShowSslModal(false)} className="text-surface-400 hover:text-white"><X className="w-5 h-5"/></button>
             </div>
             <form onSubmit={handleSsl} className="p-5 space-y-4">
-              <p className="text-sm text-surface-400">Generate a free Let's Encrypt certificate. Your domain must already point to this server's IP.</p>
+              <p className="text-sm text-surface-400">Generate a free Let&apos;s Encrypt certificate. Your domain must already point to this server&apos;s IP.</p>
               <div>
                 <label className="block text-xs font-medium text-surface-400 mb-1.5">Domain(s) (comma separated)</label>
                 <input required placeholder="example.com,www.example.com" value={sslForm.domain} onChange={e => setSslForm({...sslForm, domain: e.target.value})} className="w-full bg-surface-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none" />

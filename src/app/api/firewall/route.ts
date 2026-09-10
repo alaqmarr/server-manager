@@ -43,8 +43,13 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const body = await req.json();
-    const { action, port, protocol, id } = body;
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
+    const { action, port, protocol, id } = body || {};
 
     let cmd = "";
     if (action === "enable") cmd = "sudo -n ufw --force enable";

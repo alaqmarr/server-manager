@@ -7,23 +7,45 @@ export default function CronPage() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { loadCron(); }, []);
-
   const loadCron = async () => {
     setLoading(true);
-    const res = await fetch("/api/cron");
-    if (res.ok) {
-      const data = await res.json();
-      setContent(data.content);
+    try {
+      const res = await fetch("/api/cron");
+      if (res.ok) {
+        const data = await res.json();
+        setContent(data.content || "");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        console.error("Failed to load crontab:", data.error || res.statusText);
+      }
+    } catch (err) {
+      console.error("Error loading crontab:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  useEffect(() => { loadCron(); }, []);
 
   const saveCron = async () => {
     setLoading(true);
-    const res = await fetch("/api/cron", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ content }) });
-    if (res.ok) alert("Crontab updated!");
-    setLoading(false);
+    try {
+      const res = await fetch("/api/cron", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        alert("Crontab updated!");
+      } else {
+        alert("Failed to update crontab: " + (data.error || res.statusText));
+      }
+    } catch (err: any) {
+      alert("Error saving crontab: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

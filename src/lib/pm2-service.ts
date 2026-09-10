@@ -1,4 +1,4 @@
-import { execFile } from "child_process";
+import { exec, execFile } from "child_process";
 import { promisify } from "util";
 import { getActivePorts } from "./ports-service";
 
@@ -164,7 +164,7 @@ function applyMetricJitter(procs: PM2Process[]): PM2Process[] {
  */
 export async function getPM2Processes(): Promise<PM2ListResponse> {
   // Try fetching active ports concurrently to map them to PM2 processes
-  let activePortsMap = new Map<number, number[]>();
+  const activePortsMap = new Map<number, number[]>();
   try {
     const portsData = await getActivePorts();
     if (portsData && portsData.ports) {
@@ -374,8 +374,6 @@ export async function executePM2Action(
 }
 export async function getPM2Logs(appName: string, lines: number = 15): Promise<string> {
   return new Promise((resolve) => {
-    const { exec } = require("child_process");
-    
     // 🚨 FIX: Strip the Nexus PORT so we don't poison other apps
     const cleanEnv = { ...process.env };
     delete cleanEnv.PORT;

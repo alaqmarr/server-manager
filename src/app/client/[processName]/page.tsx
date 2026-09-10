@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import { Activity, Cpu, Server, RotateCw, Terminal, LogOut } from "lucide-react";
 import LogStreamer from "@/components/LogStreamer";
 import { VitalsChart } from "@/components/VitalsChart";
@@ -13,6 +13,13 @@ export default function ClientDashboard(props: { params: Promise<{ processName: 
   const [process, setProcess] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRestarting, setIsRestarting] = useState(false);
+  const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (restartTimeoutRef.current) clearTimeout(restartTimeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +52,8 @@ export default function ClientDashboard(props: { params: Promise<{ processName: 
         body: JSON.stringify({ action: "restart", id: processName }),
       });
     } finally {
-      setTimeout(() => setIsRestarting(false), 2000);
+      if (restartTimeoutRef.current) clearTimeout(restartTimeoutRef.current);
+      restartTimeoutRef.current = setTimeout(() => setIsRestarting(false), 2000);
     }
   };
 
@@ -81,7 +89,7 @@ export default function ClientDashboard(props: { params: Promise<{ processName: 
         </div>
       ) : !process ? (
         <div className="p-8 bg-red-500/10 border border-red-500/20 rounded-xl text-center text-red-400">
-          We could not find the application "{processName}". It may be offline or you may not have permission to view it.
+          We could not find the application &quot;{processName}&quot;. It may be offline or you may not have permission to view it.
         </div>
       ) : (
         <div className="space-y-6">

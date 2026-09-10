@@ -15,17 +15,25 @@ export default function LogsPage() {
     "/var/log/auth.log"
   ];
 
-  useEffect(() => { loadLogs(); }, [file]);
-
   const loadLogs = async () => {
     setLoading(true);
-    const res = await fetch(`/api/logs?file=${encodeURIComponent(file)}`);
-    if (res.ok) {
-      const data = await res.json();
-      setContent(data.content || data.error);
+    try {
+      const res = await fetch(`/api/logs?file=${encodeURIComponent(file)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setContent(data.content || data.error || "");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setContent(data.error || "Failed to load logs");
+      }
+    } catch (err: any) {
+      setContent(err.message || "Failed to load logs");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  useEffect(() => { loadLogs(); }, [file]);
 
   return (
     <div className="card-gradient rounded-2xl border border-white/5 flex flex-col shadow-2xl h-[75vh]">

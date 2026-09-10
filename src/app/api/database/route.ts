@@ -11,12 +11,17 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const body = await req.json();
-    const { action, dbPath, query } = body;
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
+    const { action, dbPath, query } = body || {};
 
     if (!dbPath) return NextResponse.json({ error: "Missing database path" }, { status: 400 });
 
-    const targetPath = path.resolve(dbPath);
+    const targetPath = path.resolve(/*turbopackIgnore: true*/ dbPath);
     if (!fs.existsSync(/*turbopackIgnore: true*/ targetPath)) {
       return NextResponse.json({ error: "Database file does not exist" }, { status: 404 });
     }

@@ -22,7 +22,13 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     
-    const { content } = await req.json();
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
+    const { content } = body || {};
     if (typeof content !== 'string') return NextResponse.json({ error: "Invalid content" }, { status: 400 });
     
     return new Promise<NextResponse>((resolve) => {

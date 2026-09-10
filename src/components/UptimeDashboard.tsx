@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   Globe,
   Plus,
@@ -13,6 +13,10 @@ import {
   ExternalLink,
   ShieldCheck,
   Zap,
+  Activity,
+  AlertTriangle,
+  ArrowUpRight,
+  TrendingUp,
   X,
 } from "lucide-react";
 
@@ -29,6 +33,18 @@ export interface UptimeMonitor {
   createdAt: string;
 }
 
+function formatRelativeTime(isoString: string | null): string {
+  if (!isoString) return "Never";
+  const diffSeconds = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+  if (diffSeconds < 10) return "Just now";
+  if (diffSeconds < 60) return `${diffSeconds}s ago`;
+  const mins = Math.floor(diffSeconds / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
 export function UptimeDashboard() {
   const [monitors, setMonitors] = useState<UptimeMonitor[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -37,6 +53,13 @@ export function UptimeDashboard() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
+    };
+  }, []);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -94,7 +117,8 @@ export function UptimeDashboard() {
       const json = await res.json();
       if (json.success) {
         setSuccessMessage(`Check completed: Monitor is ${json.check.status} (${json.check.responseTimeMs || json.check.responseTime}ms)`);
-        setTimeout(() => setSuccessMessage(null), 4000);
+        if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
+        successTimeoutRef.current = setTimeout(() => setSuccessMessage(null), 4000);
         await fetchMonitors(false);
       }
     } catch (err: any) {
@@ -176,18 +200,6 @@ export function UptimeDashboard() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const formatRelativeTime = (isoString: string | null): string => {
-    if (!isoString) return "Never";
-    const diffSeconds = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
-    if (diffSeconds < 10) return "Just now";
-    if (diffSeconds < 60) return `${diffSeconds}s ago`;
-    const mins = Math.floor(diffSeconds / 60);
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
   };
 
   // Summary Metrics

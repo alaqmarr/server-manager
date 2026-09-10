@@ -13,15 +13,20 @@ export default function FirewallPage() {
 
   const loadData = async () => {
     setLoading(true);
-    const res = await fetch("/api/firewall");
-    if (res.status === 401) { window.location.href = '/login'; return; }
-    const data = await res.json();
-    if (data.active !== undefined) {
-      setActive(data.active);
-      setRules(data.rules || []);
-      setRaw(data.raw || "");
+    try {
+      const res = await fetch("/api/firewall");
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      const data = await res.json().catch(() => ({}));
+      if (data.active !== undefined) {
+        setActive(data.active);
+        setRules(data.rules || []);
+        setRaw(data.raw || "");
+      }
+    } catch (err) {
+      console.error("Failed to load firewall data:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => { loadData(); }, []);
@@ -31,22 +36,27 @@ export default function FirewallPage() {
     if (action === 'disable' && !confirm("WARNING: Disabling the firewall can expose your server. Continue?")) return;
     
     setLoading(true);
-    const payload: any = { action };
-    if (id) payload.id = id;
-    if (action === 'allow') {
-      payload.port = newPort;
-      payload.protocol = newProto;
-    }
+    try {
+      const payload: any = { action };
+      if (id) payload.id = id;
+      if (action === 'allow') {
+        payload.port = newPort;
+        payload.protocol = newProto;
+      }
 
-    const res = await fetch("/api/firewall", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (data.error) alert(data.error);
-    if (action === 'allow') setNewPort("");
-    loadData();
+      const res = await fetch("/api/firewall", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.error) alert(data.error);
+      if (action === 'allow') setNewPort("");
+    } catch (err: any) {
+      alert("Error performing firewall action: " + err.message);
+    } finally {
+      loadData();
+    }
   };
 
   return (

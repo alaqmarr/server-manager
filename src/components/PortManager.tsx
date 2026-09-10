@@ -19,8 +19,8 @@ export default function PortManager() {
     setLoading(true);
     try {
       const res = await fetch("/api/ports");
-      if (!res.ok) throw new Error("Failed to fetch port mappings");
       if (res.status === 401) { window.location.href = '/login'; return; }
+      if (!res.ok) throw new Error("Failed to fetch port mappings");
       const data = await res.json();
       setPorts(data.ports || []);
       setError(null);

@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     body = await req.json();
   } catch {
     return NextResponse.json(
-      { error: "Malformed or missing JSON body" },
+      { error: "Invalid JSON payload" },
       { status: 400 }
     );
   }

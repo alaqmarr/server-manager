@@ -82,10 +82,10 @@ export default function PM2Manager() {
   const fetchProcesses = async () => {
     try {
       const res = await fetch("/api/pm2");
+      if (res.status === 401) { window.location.href = '/login'; return; }
       if (!res.ok) {
         throw new Error(`Failed to fetch processes: ${res.statusText}`);
       }
-      if (res.status === 401) { window.location.href = '/login'; return; }
       const data = await res.json();
       setProcesses(data.processes || []);
       setError(null);

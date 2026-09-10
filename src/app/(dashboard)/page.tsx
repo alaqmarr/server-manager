@@ -5,25 +5,51 @@ import { Activity, Cpu, HardDrive, Server, Zap, MemoryStick, Clock } from "lucid
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
 
+  const fallbackStats = {
+    hostname: "localhost",
+    platform: "linux",
+    release: "server",
+    uptime: 0,
+    cpu: { load: [0, 0, 0], model: "System CPU" },
+    memory: { used: 0, total: 1, usagePercent: 0 },
+    disk: { used: 0, total: 1, usagePercent: 0 },
+  };
+
+  const loadStats = async () => {
+    try {
+      const res = await fetch("/api/system/stats");
+      if (!res.ok) {
+        setStats((prev: any) => prev || fallbackStats);
+        return;
+      }
+      const data = await res.json();
+      if (data && data.cpu && data.memory) {
+        setStats(data);
+      } else {
+        setStats((prev: any) => prev || fallbackStats);
+      }
+    } catch {
+      setStats((prev: any) => prev || fallbackStats);
+    }
+  };
+
   useEffect(() => {
-    fetch("/api/system/stats").then(res => res.json()).then(setStats);
-    const interval = setInterval(() => {
-      fetch("/api/system/stats").then(res => res.json()).then(setStats);
-    }, 5000);
+    loadStats();
+    const interval = setInterval(loadStats, 5000);
     return () => clearInterval(interval);
   }, []);
 
   if (!stats) return <div className="p-8 flex items-center justify-center animate-pulse"><Zap className="w-8 h-8 text-brand-500" /></div>;
 
-  const memPercent = stats.memory.usagePercent.toFixed(1);
-  const memUsedGB = (stats.memory.used / 1024 / 1024 / 1024).toFixed(2);
-  const memTotalGB = (stats.memory.total / 1024 / 1024 / 1024).toFixed(2);
+  const memPercent = stats.memory?.usagePercent?.toFixed(1) || "0.0";
+  const memUsedGB = ((stats.memory?.used || 0) / 1024 / 1024 / 1024).toFixed(2);
+  const memTotalGB = ((stats.memory?.total || 1) / 1024 / 1024 / 1024).toFixed(2);
   
   const diskPercent = stats.disk?.usagePercent?.toFixed(1) || "0.0";
   const diskUsedGB = ((stats.disk?.used || 0) / 1024 / 1024 / 1024).toFixed(2);
-  const diskTotalGB = ((stats.disk?.total || 0) / 1024 / 1024 / 1024).toFixed(2);
+  const diskTotalGB = ((stats.disk?.total || 1) / 1024 / 1024 / 1024).toFixed(2);
 
-  const uptimeHours = (stats.uptime / 3600).toFixed(1);
+  const uptimeHours = ((stats.uptime || 0) / 3600).toFixed(1);
 
   return (
     <div className="p-4 md:p-8 w-full space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -46,10 +72,10 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-surface-400">CPU Load (1m)</p>
-              <h3 className="text-2xl font-bold text-white">{stats.cpu.load[0].toFixed(2)}</h3>
+              <h3 className="text-2xl font-bold text-white">{(stats.cpu?.load?.[0] ?? 0).toFixed(2)}</h3>
             </div>
           </div>
-          <div className="text-xs text-surface-500 truncate" title={stats.cpu.model}>{stats.cpu.model}</div>
+          <div className="text-xs text-surface-500 truncate" title={stats.cpu?.model || "CPU"}>{stats.cpu?.model || "CPU"}</div>
         </div>
 
         <div className="card-gradient rounded-2xl p-6 border border-white/5 shadow-xl relative overflow-hidden group">

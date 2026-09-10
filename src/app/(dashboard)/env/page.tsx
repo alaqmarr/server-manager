@@ -11,10 +11,14 @@ export default function EnvPage() {
   const [loadedPath, setLoadedPath] = useState("");
 
   const loadProcesses = async () => {
-    const res = await fetch("/api/pm2");
-    if (res.ok) {
-      const data = await res.json();
-      setProcesses(data.processes || []);
+    try {
+      const res = await fetch("/api/pm2");
+      if (res.ok) {
+        const data = await res.json();
+        setProcesses(data.processes || []);
+      }
+    } catch (err) {
+      console.error("Failed to load PM2 processes", err);
     }
   };
 
@@ -22,33 +26,43 @@ export default function EnvPage() {
 
   const loadEnv = async () => {
     setLoading(true);
-    const res = await fetch("/api/env", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "read", dirPath })
-    });
-    if (res.status === 401) { window.location.href = '/login'; return; }
-    const data = await res.json();
-    if (data.error) {
-      alert(data.error);
-    } else {
-      setEnvVars(data.envVars || []);
-      setLoadedPath(data.path);
+    try {
+      const res = await fetch("/api/env", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "read", dirPath })
+      });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+      } else {
+        setEnvVars(data.envVars || []);
+        setLoadedPath(data.path);
+      }
+    } catch (err: any) {
+      alert("Error reading env: " + err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSave = async () => {
     setLoading(true);
-    const res = await fetch("/api/env", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "save", dirPath: loadedPath.replace('/.env', ''), envData: envVars, pm2Id: selectedPm2 })
-    });
-    const data = await res.json();
-    if (data.error) alert(data.error);
-    else alert(data.message);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/env", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "save", dirPath: loadedPath.replace('/.env', ''), envData: envVars, pm2Id: selectedPm2 })
+      });
+      const data = await res.json();
+      if (data.error) alert(data.error);
+      else alert(data.message);
+    } catch (err: any) {
+      alert("Error saving env: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addVar = () => setEnvVars([...envVars, { key: "", value: "" }]);
@@ -104,7 +118,7 @@ export default function EnvPage() {
               <select value={selectedPm2} onChange={e => setSelectedPm2(e.target.value)} className="bg-surface-950 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-slate-300 outline-none">
                 <option value="">Do not restart PM2</option>
                 {processes.map(p => (
-                  <option key={p.pm_id} value={p.pm_id}>Restart: {p.name}</option>
+                  <option key={p.id} value={p.id}>Restart: {p.name}</option>
                 ))}
               </select>
               <button onClick={addVar} className="px-3 py-1.5 bg-surface-800 hover:bg-surface-700 text-white rounded-lg flex items-center gap-2 text-sm transition-colors border border-white/5">

@@ -16,39 +16,74 @@ export default function ScriptsPage() {
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { loadScripts(); }, []);
-
   const loadScripts = async () => {
-    const res = await fetch("/api/scripts");
-    if (res.ok) {
-      const data = await res.json();
-      setScripts(data.scripts || []);
+    try {
+      const res = await fetch("/api/scripts");
+      if (res.ok) {
+        const data = await res.json();
+        setScripts(data.scripts || []);
+      }
+    } catch (err) {
+      console.error("Error loading scripts:", err);
     }
   };
 
+  useEffect(() => { loadScripts(); }, []);
+
   const handleSave = async () => {
     setLoading(true);
-    await fetch("/api/scripts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, content, linkedPm2Process })
-    });
-    setName(""); setContent(""); setLinkedPm2Process(""); loadScripts(); setLoading(false);
+    try {
+      const res = await fetch("/api/scripts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, content, linkedPm2Process })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert("Failed to save script: " + (data.error || res.statusText));
+      } else {
+        setName("");
+        setContent("");
+        setLinkedPm2Process("");
+        await loadScripts();
+      }
+    } catch (err: any) {
+      alert("Error saving script: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRun = async (id: string) => {
     setLoading(true);
     setOutput("Executing...");
-    const res = await fetch(`/api/scripts/${id}/execute`, { method: "POST" });
-    const data = await res.json();
-    setOutput(stripAnsi(data.output || data.error || "No output"));
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/scripts/${id}/execute`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      setOutput(stripAnsi(data.output || data.error || "No output"));
+    } catch (err: any) {
+      setOutput("Execution error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure?")) return;
-    await fetch(`/api/scripts/${id}`, { method: "DELETE" });
-    loadScripts();
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/scripts/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert("Failed to delete script: " + (data.error || res.statusText));
+      } else {
+        await loadScripts();
+      }
+    } catch (err: any) {
+      alert("Error deleting script: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

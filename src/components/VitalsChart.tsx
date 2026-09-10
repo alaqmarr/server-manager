@@ -92,7 +92,6 @@ export function VitalsChart() {
   const fetchVitals = useCallback(
     async (showSpinner = false) => {
       if (showSpinner) setIsRefreshing(true);
-      setError(null);
 
       try {
         const procQuery = selectedProcess ? `process=${encodeURIComponent(selectedProcess)}&` : "";
@@ -101,6 +100,7 @@ export function VitalsChart() {
           throw new Error(`HTTP error ${res.status}`);
         }
         const json = await res.json();
+        setError(null);
         if (json.success && Array.isArray(json.data)) {
           setVitals(json.data);
         } else {
@@ -118,11 +118,20 @@ export function VitalsChart() {
   );
 
   useEffect(() => {
-    fetchVitals(false);
+    let active = true;
+    (async () => {
+      await Promise.resolve();
+      if (active) {
+        fetchVitals(false);
+      }
+    })();
     const interval = setInterval(() => {
       fetchVitals(false);
     }, 30000); // 30s auto-refresh
-    return () => clearInterval(interval);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
   }, [fetchVitals]);
 
   // Format data for recharts

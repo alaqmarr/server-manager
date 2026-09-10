@@ -19,14 +19,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const tmpFile = path.join(os.tmpdir(), `script_${Date.now()}.sh`);
     fs.writeFileSync(tmpFile, script.content, { mode: 0o755 });
     
-    return new Promise<NextResponse>((resolve) => {
+    return await new Promise<NextResponse>((resolve) => {
       exec(`bash ${tmpFile}`, { timeout: 60000 }, (error, stdout, stderr) => {
-        fs.unlinkSync(tmpFile);
-        resolve(NextResponse.json({
-          success: !error,
-          output: stdout || stderr,
-          error: error ? error.message : null
-        }));
+        try {
+          resolve(NextResponse.json({
+            success: !error,
+            output: stdout || stderr,
+            error: error ? error.message : null
+          }));
+        } finally {
+          try {
+            if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+          } catch {
+            // Ignore cleanup failure
+          }
+        }
       });
     });
   } catch (error: any) {

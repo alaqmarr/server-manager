@@ -17,8 +17,13 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const { name, content, description, linkedPm2Process } = await req.json();
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
+    const { name, content, description, linkedPm2Process } = body || {};
     if (!name || !content) return NextResponse.json({ error: "Missing name or content" }, { status: 400 });
     
     const stmt = db.prepare('INSERT INTO scripts (name, content, description, linkedPm2Process) VALUES (?, ?, ?, ?)');

@@ -16,22 +16,28 @@ export default function DatabasePage() {
     setLoading(true);
     setError("");
     setResults(null);
-    const res = await fetch("/api/database", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "connect", dbPath })
-    });
-    if (res.status === 401) { window.location.href = '/login'; return; }
-    const data = await res.json();
-    if (data.error) {
-      setError(data.error);
+    try {
+      const res = await fetch("/api/database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "connect", dbPath })
+      });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      const data = await res.json().catch(() => ({}));
+      if (data.error) {
+        setError(data.error);
+        setConnected(false);
+      } else {
+        setConnected(true);
+        setTables(data.tables || []);
+        setSchema(data.schema || {});
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to connect to database");
       setConnected(false);
-    } else {
-      setConnected(true);
-      setTables(data.tables || []);
-      setSchema(data.schema || {});
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleQuery = async () => {
@@ -39,18 +45,24 @@ export default function DatabasePage() {
     setLoading(true);
     setError("");
     setResults(null);
-    const res = await fetch("/api/database", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "query", dbPath, query })
-    });
-    const data = await res.json();
-    if (data.error) {
-      setError(data.error);
-    } else {
-      setResults(data.rows || []);
+    try {
+      const res = await fetch("/api/database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "query", dbPath, query })
+      });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      const data = await res.json().catch(() => ({}));
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setResults(data.rows || []);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to execute query");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const loadTable = (tableName: string) => {
