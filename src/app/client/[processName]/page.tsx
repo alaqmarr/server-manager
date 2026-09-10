@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Activity, Cpu, Server, RotateCw, Terminal, LogOut } from "lucide-react";
 import LogStreamer from "@/components/LogStreamer";
 import { signOut } from "next-auth/react";
 
-export default function ClientDashboard({ params }: { params: { processName: string } }) {
+export default function ClientDashboard(props: { params: Promise<{ processName: string }> }) {
+  const params = use(props.params);
+  const processName = params.processName;
+  
   const [process, setProcess] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRestarting, setIsRestarting] = useState(false);
-  const processName = params.processName;
 
   useEffect(() => {
     const fetchData = async () => {
